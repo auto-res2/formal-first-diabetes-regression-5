@@ -94,6 +94,15 @@
           "C02"
         ],
         "by_comparison": true
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "偽",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
       }
     },
     {
@@ -105,7 +114,16 @@
       "proposition": "abbrev C02 : Prop :=\n  C03 ∧ C04 ∧ C05 ∧ C06 ∧ C07 ∧ C08 ∧ C09 ∧ C10 ∧ ∃ mse : ℚ, mse = specifiedTestMse",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C03",
@@ -116,7 +134,12 @@
       "proposition": "abbrev C03 : Prop :=\n  C03.value =\n    [{ name := \"diabetes\", location := \"https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt\",\n       checksum := \"4733febee697862c22139cdac87478a300ce0d101593deb07ed6c0f3328a99cd\",\n       sampleCount := 442, columns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\", \"Y\"] }]",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "C04",
@@ -127,7 +150,16 @@
       "proposition": "abbrev C04 : Prop :=\n  C04.value =\n    { functionName := \"numpy.loadtxt\", arguments := [(\"skiprows\", \"1\")],\n      featureColumns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\"], targetColumn := \"Y\" } ∧\n  features = loadedFeatures C04.value.arguments ∧ target = loadedTarget C04.value.arguments",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C05",
@@ -138,7 +170,16 @@
       "proposition": "abbrev C05 : Prop :=\n  C05.value =\n    { functionName := \"sklearn.model_selection.train_test_split\",\n      arguments := [(\"test_size\", \"0.2\"), (\"random_state\", \"0\")],\n      randomGenerator := \"numpy.random.RandomState\", seed := \"0\" } ∧\n  testRows = trainTestSplit C05.value.arguments ∧ trainRows = testRowsᶜ",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C06",
@@ -149,7 +190,16 @@
       "proposition": "abbrev C06 : Prop :=\n  C06.value =\n    { functionName := \"sklearn.linear_model.LinearRegression.fit\",\n      arguments := [(\"copy_X\", \"True\"), (\"fit_intercept\", \"True\"), (\"n_jobs\", \"None\"), (\"positive\", \"False\"), (\"tol\", \"1e-06\")] } ∧\n  fittedModel = fit C06.value.arguments trainRows features target",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C07",
@@ -160,7 +210,16 @@
       "proposition": "abbrev C07 : Prop :=\n  C07.value = { functionName := \"sklearn.linear_model.LinearRegression.predict\", arguments := [] } ∧\n  prediction = fun i => predict fittedModel (features i)",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C08",
@@ -171,7 +230,16 @@
       "proposition": "abbrev C08 : Prop :=\n  C08.value = { functionName := \"sklearn.metrics.mean_squared_error\", arguments := [] } ∧\n  specifiedTestMse = meanSquaredError testRows target prediction",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "C09",
@@ -182,7 +250,12 @@
       "proposition": "abbrev C09 : Prop :=\n  C09.value =\n    { environment :=\n        { osName := \"Ubuntu\", osVersion := \"24.04\", kernelRelease := \"7.0.0-1014-aws\",\n          cpuModel := \"Intel(R) Xeon(R) 6975P-C\", cpuArchitecture := \"x86_64\",\n          physicalCoreCount := 2, logicalCpuCount := 4, memoryGibibytes := 16,\n          gpuNames := [], nodeCount := 1 },\n      memoryUsageLimitMebibytes := 1024,\n      parallelism := { threadCount := 1, processCount := 1, gpuCount := 0 } }",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "C10",
@@ -193,7 +266,12 @@
       "proposition": "abbrev C10 : Prop :=\n  C10.value =\n    { commit := \"9666bcaf7d9e4bc1e7e8734648f7e78d343c9149\",\n      language := \"CPython 3.13.3\",\n      dependencies := [(\"cloudpickle\", \"3.1.3\"), (\"joblib\", \"1.6.0\"), (\"numpy\", \"2.3.4\"), (\"scikit-learn\", \"1.7.2\"), (\"scipy\", \"1.18.1\"), (\"threadpoolctl\", \"3.8.0\")],\n      setupCommand := [\"uv\", \"sync\", \"--frozen\", \"--python\", \"3.13.3\"], command := [\".venv/bin/python\", \"src/run_experiment.py\"],\n      environmentVariables := [(\"CUDA_VISIBLE_DEVICES\", \"\"), (\"MKL_NUM_THREADS\", \"1\"), (\"OMP_NUM_THREADS\", \"1\"), (\"OPENBLAS_NUM_THREADS\", \"1\")] }",
       "main": false,
       "kind": "declaration",
-      "verifier": "Lean"
+      "verifier": "Lean",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "R01",
@@ -207,6 +285,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredDatasets": "C03.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -221,6 +304,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredDatasets": "C03.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -235,6 +323,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredDatasets": "C03.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -250,7 +343,12 @@
       "declared": {
         "declaredLoad": "C04.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R04_axiom"
+      }
     },
     {
       "id": "R05",
@@ -264,6 +362,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredLoad": "C04.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -275,7 +378,14 @@
       "proposition": "abbrev R06 (preparedDatasets : List Dataset) (loadedFileChecksums : List String) : Prop :=\n  ∀ prepared ∈ preparedDatasets, prepared.checksum ∈ loadedFileChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R07",
@@ -286,7 +396,15 @@
       "proposition": "abbrev R07 (preparedDatasets : List Dataset) (loadedShapes : List (List ℕ)) : Prop :=\n  ∀ prepared ∈ preparedDatasets, [prepared.sampleCount, prepared.columns.length] ∈ loadedShapes",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "R08",
@@ -297,7 +415,14 @@
       "proposition": "abbrev R08 (preparedFileColumnChecksums loadedColumnChecksums : List (List String)) : Prop :=\n  ∀ columns ∈ preparedFileColumnChecksums, columns ∈ loadedColumnChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R09",
@@ -311,6 +436,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredLoad": "C04.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -326,7 +456,12 @@
       "declared": {
         "declaredSplit": "C05.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R10_axiom"
+      }
     },
     {
       "id": "R11",
@@ -340,6 +475,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredSplit": "C05.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -351,7 +491,14 @@
       "proposition": "abbrev R12 (loadedColumnChecksums splitInputColumnChecksums : List (List String)) : Prop :=\n  loadedColumnChecksums ≠ [] ∧\n  ∀ loaded ∈ loadedColumnChecksums, ∃ passed ∈ splitInputColumnChecksums,\n    (∀ column ∈ loaded, column ∈ passed) ∧ (∀ column ∈ passed, column ∈ loaded)",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R13",
@@ -362,7 +509,16 @@
       "proposition": "abbrev R13 (observedTrainIndex observedTestIndex : List ℕ) : Prop :=\n  Disjoint observedTrainIndex.toFinset observedTestIndex.toFinset",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "R14",
@@ -373,7 +529,16 @@
       "proposition": "abbrev R14 (splitInputSampleCount : ℕ) (observedTrainIndex observedTestIndex : List ℕ) : Prop :=\n  observedTrainIndex.toFinset ∪ observedTestIndex.toFinset = Finset.range splitInputSampleCount",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "R15",
@@ -385,7 +550,12 @@
       "main": false,
       "kind": "axiom",
       "verifier": null,
-      "unverifiable": "Agent のログを検証する検証器が無い"
+      "unverifiable": "Agent のログを検証する検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "Agent のログを検証する検証器が無い",
+        "axiom": "R15_axiom"
+      }
     },
     {
       "id": "R16",
@@ -399,6 +569,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredSplit": "C05.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -414,7 +589,12 @@
       "declared": {
         "declaredSplit": "C05.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R17_axiom"
+      }
     },
     {
       "id": "R18",
@@ -429,7 +609,12 @@
       "declared": {
         "declaredFit": "C06.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R18_axiom"
+      }
     },
     {
       "id": "R19",
@@ -443,6 +628,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredFit": "C06.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -454,7 +644,12 @@
       "proposition": "abbrev R20 (splitTrainChecksums fitInputChecksums : List String) : Prop :=\n  splitTrainChecksums ≠ [] ∧ fitInputChecksums = splitTrainChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "R21",
@@ -465,7 +660,16 @@
       "proposition": "abbrev R21 (fitInputIndex observedTestIndex : List ℕ) : Prop :=\n  Disjoint fitInputIndex.toFinset observedTestIndex.toFinset",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "R22",
@@ -480,7 +684,12 @@
       "declared": {
         "declaredPredict": "C07.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R22_axiom"
+      }
     },
     {
       "id": "R23",
@@ -494,6 +703,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredPredict": "C07.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -505,7 +719,14 @@
       "proposition": "abbrev R24 (fittedModelChecksums predictModelChecksums : List String) : Prop :=\n  fittedModelChecksums ≠ [] ∧ ∀ model ∈ fittedModelChecksums, model ∈ predictModelChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R25",
@@ -516,7 +737,14 @@
       "proposition": "abbrev R25 (splitTestFeatureChecksums predictInputChecksums : List String) : Prop :=\n  splitTestFeatureChecksums ≠ [] ∧ ∀ features ∈ splitTestFeatureChecksums, features ∈ predictInputChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R26",
@@ -527,7 +755,14 @@
       "proposition": "abbrev R26 (splitTestTargetChecksums : List String) (predictInputColumnChecksums : List (List String)) : Prop :=\n  ∀ target ∈ splitTestTargetChecksums, ∀ columns ∈ predictInputColumnChecksums, target ∉ columns",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R27",
@@ -542,7 +777,12 @@
       "declared": {
         "declaredMetric": "C08.value"
       },
-      "unverifiable": "形式化の忠実性検証の検証器が無い"
+      "unverifiable": "形式化の忠実性検証の検証器が無い",
+      "result": {
+        "status": "unverifiable",
+        "reason": "形式化の忠実性検証の検証器が無い",
+        "axiom": "R27_axiom"
+      }
     },
     {
       "id": "R28",
@@ -556,6 +796,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredMetric": "C08.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -567,7 +812,14 @@
       "proposition": "abbrev R29 (predictOutputChecksums metricPredictionChecksums : List String) : Prop :=\n  predictOutputChecksums ≠ [] ∧ ∀ prediction ∈ predictOutputChecksums, prediction ∈ metricPredictionChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R30",
@@ -578,7 +830,14 @@
       "proposition": "abbrev R30 (splitTestTargetChecksums metricTargetChecksums : List String) : Prop :=\n  splitTestTargetChecksums ≠ [] ∧ ∀ target ∈ splitTestTargetChecksums, target ∈ metricTargetChecksums",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "propext"
+        ]
+      }
     },
     {
       "id": "R31",
@@ -589,7 +848,12 @@
       "proposition": "abbrev R31 (metricTargetSampleCounts metricPredictionSampleCounts : List ℕ) : Prop :=\n  metricTargetSampleCounts ≠ [] ∧ metricTargetSampleCounts = metricPredictionSampleCounts",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "R32",
@@ -600,7 +864,16 @@
       "proposition": "abbrev R32 (metricReturnedValues : List ℚ) (outputTestMse : ℚ) : Prop :=\n  metricReturnedValues ≠ [] ∧ ∀ value ∈ metricReturnedValues, value = outputTestMse",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     {
       "id": "R33",
@@ -614,6 +887,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredHardwareAndOs": "C09.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "偽",
+        "axioms": []
       }
     },
     {
@@ -625,7 +903,12 @@
       "proposition": "abbrev R34 (sampledUsage : SampledUsage) (configuredParallelism : Parallelism) (finalMaxMemoryMebibytes : ℕ) : Prop :=\n  sampledUsage.peakMemoryMebibytes ≤ finalMaxMemoryMebibytes ∧\n  sampledUsage.peakThreadCount ≤ configuredParallelism.threadCount * configuredParallelism.processCount ∧\n  sampledUsage.peakProcessCount ≤ configuredParallelism.processCount ∧\n  sampledUsage.peakGpuProcessCount ≤ configuredParallelism.gpuCount",
       "main": false,
       "kind": "",
-      "verifier": "GitHub"
+      "verifier": "GitHub",
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
+      }
     },
     {
       "id": "R35",
@@ -639,6 +922,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredCode": "C10.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -653,6 +941,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredCode": "C10.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -667,6 +960,11 @@
       "verifier": "GitHub",
       "declared": {
         "declaredCode": "C10.value"
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -688,6 +986,15 @@
         "paths": {
           "Reliable.C02": "h"
         }
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "偽",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
       }
     },
     {
@@ -713,6 +1020,15 @@
           "Reliable.C09",
           "Reliable.C10"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "偽",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "propext"
+        ]
       }
     },
     {
@@ -733,6 +1049,11 @@
           "R02",
           "R03"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     },
     {
@@ -755,6 +1076,15 @@
           "R07",
           "R08",
           "R09"
+        ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Quot.sound",
+          "R04_axiom",
+          "propext"
         ]
       }
     },
@@ -781,6 +1111,18 @@
           "R16",
           "R17"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "R10_axiom",
+          "R15_axiom",
+          "R17_axiom",
+          "propext"
+        ]
       }
     },
     {
@@ -801,6 +1143,16 @@
           "R19",
           "R20",
           "R21"
+        ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "R18_axiom",
+          "propext"
         ]
       }
     },
@@ -823,6 +1175,14 @@
           "R24",
           "R25",
           "R26"
+        ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "R22_axiom",
+          "propext"
         ]
       }
     },
@@ -847,6 +1207,16 @@
           "R31",
           "R32"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": [
+          "Classical.choice",
+          "Quot.sound",
+          "R27_axiom",
+          "propext"
+        ]
       }
     },
     {
@@ -866,6 +1236,11 @@
           "R33",
           "R34"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "偽",
+        "axioms": []
       }
     },
     {
@@ -886,6 +1261,11 @@
           "R36",
           "R37"
         ]
+      },
+      "result": {
+        "status": "verified",
+        "verdict": "真",
+        "axioms": []
       }
     }
   ],
@@ -897,6 +1277,11 @@
       "query": "experiment_output",
       "args": {
         "key": "testMse"
+      },
+      "verified": {
+        "value": "8560648335746739/2500000000000",
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "preparedDatasets": {
@@ -906,6 +1291,31 @@
       "query": "artifact_json",
       "args": {
         "path": "prepared.json"
+      },
+      "verified": {
+        "value": [
+          {
+            "name": "diabetes",
+            "location": "https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt",
+            "checksum": "4733febee697862c22139cdac87478a300ce0d101593deb07ed6c0f3328a99cd",
+            "sampleCount": 442,
+            "columns": [
+              "AGE",
+              "SEX",
+              "BMI",
+              "BP",
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5",
+              "S6",
+              "Y"
+            ]
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedLoadCalls": {
@@ -915,6 +1325,21 @@
       "query": "observed_calls",
       "args": {
         "function": "numpy.loadtxt"
+      },
+      "verified": {
+        "value": [
+          {
+            "functionName": "numpy.loadtxt",
+            "arguments": [
+              [
+                "skiprows",
+                "1"
+              ]
+            ]
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "loadedFileChecksums": {
@@ -931,6 +1356,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "4733febee697862c22139cdac87478a300ce0d101593deb07ed6c0f3328a99cd"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "loadedShapes": {
@@ -947,6 +1379,16 @@
             "shape"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            442,
+            11
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "preparedFileColumnChecksums": {
@@ -958,6 +1400,25 @@
         "paths": [
           "outputs/data/diabetes.tab.txt"
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "1b964456c59319f86c54c92409d3c5561f02cf95820c9d0f5aaaed0df466f27d",
+            "eadb2a633f822e84c115728b9233dcd0f5b7304a04feff74553c2ab9eaa5faeb",
+            "1659c1b610b4deba923391cd998a6f243bb4062d132c9d2af638846a57116965",
+            "9b35cf5cb30b90f0abfa5921398959fbcce0ff437e6cfa470a0d9c8612e5d6ff",
+            "fe6bbddcab6645bd726d98378728c35e4e50509511207290e8233b1d1f19125c",
+            "0b2cd94ce168b1a6d980a4f01d365123524e49fc1e182e02db129b5314b97b34",
+            "6df65da727bcb9eed00b710527f4828595bbb89179f37e2c9b80ac6389568a0f",
+            "5138d8dff341d79cb2c7e73a1c76f38626ec71180814663c243a359e0dc113f2",
+            "07c5b216a6c40a1e3a1105a496e332731c5162faa7fd0d74af254c73cba711d2",
+            "bf89668d170fafc5f9d0bc11ec66d3990f9ffd0af38c073cf4ce3ac073bc988e",
+            "e14ef80568e99a36a978f401cd934518b3387b69519cb5062760ffa2cab37c5a"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "loadedColumnChecksums": {
@@ -974,6 +1435,25 @@
             "columnSha256s"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "1b964456c59319f86c54c92409d3c5561f02cf95820c9d0f5aaaed0df466f27d",
+            "eadb2a633f822e84c115728b9233dcd0f5b7304a04feff74553c2ab9eaa5faeb",
+            "1659c1b610b4deba923391cd998a6f243bb4062d132c9d2af638846a57116965",
+            "9b35cf5cb30b90f0abfa5921398959fbcce0ff437e6cfa470a0d9c8612e5d6ff",
+            "fe6bbddcab6645bd726d98378728c35e4e50509511207290e8233b1d1f19125c",
+            "0b2cd94ce168b1a6d980a4f01d365123524e49fc1e182e02db129b5314b97b34",
+            "6df65da727bcb9eed00b710527f4828595bbb89179f37e2c9b80ac6389568a0f",
+            "5138d8dff341d79cb2c7e73a1c76f38626ec71180814663c243a359e0dc113f2",
+            "07c5b216a6c40a1e3a1105a496e332731c5162faa7fd0d74af254c73cba711d2",
+            "bf89668d170fafc5f9d0bc11ec66d3990f9ffd0af38c073cf4ce3ac073bc988e",
+            "e14ef80568e99a36a978f401cd934518b3387b69519cb5062760ffa2cab37c5a"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedFeatureColumns": {
@@ -987,6 +1467,22 @@
         "arrays": [
           "arrays[0]"
         ]
+      },
+      "verified": {
+        "value": [
+          "AGE",
+          "SEX",
+          "BMI",
+          "BP",
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedTargetColumn": {
@@ -1001,6 +1497,11 @@
           "arrays[1]"
         ],
         "single": true
+      },
+      "verified": {
+        "value": "Y",
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedSplitCalls": {
@@ -1010,6 +1511,25 @@
       "query": "observed_calls",
       "args": {
         "function": "sklearn.model_selection.train_test_split"
+      },
+      "verified": {
+        "value": [
+          {
+            "functionName": "sklearn.model_selection.train_test_split",
+            "arguments": [
+              [
+                "test_size",
+                "0.2"
+              ],
+              [
+                "random_state",
+                "0"
+              ]
+            ]
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "splitInputColumnChecksums": {
@@ -1031,6 +1551,25 @@
             "columnSha256s"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "1b964456c59319f86c54c92409d3c5561f02cf95820c9d0f5aaaed0df466f27d",
+            "eadb2a633f822e84c115728b9233dcd0f5b7304a04feff74553c2ab9eaa5faeb",
+            "1659c1b610b4deba923391cd998a6f243bb4062d132c9d2af638846a57116965",
+            "9b35cf5cb30b90f0abfa5921398959fbcce0ff437e6cfa470a0d9c8612e5d6ff",
+            "fe6bbddcab6645bd726d98378728c35e4e50509511207290e8233b1d1f19125c",
+            "0b2cd94ce168b1a6d980a4f01d365123524e49fc1e182e02db129b5314b97b34",
+            "6df65da727bcb9eed00b710527f4828595bbb89179f37e2c9b80ac6389568a0f",
+            "5138d8dff341d79cb2c7e73a1c76f38626ec71180814663c243a359e0dc113f2",
+            "07c5b216a6c40a1e3a1105a496e332731c5162faa7fd0d74af254c73cba711d2",
+            "bf89668d170fafc5f9d0bc11ec66d3990f9ffd0af38c073cf4ce3ac073bc988e",
+            "e14ef80568e99a36a978f401cd934518b3387b69519cb5062760ffa2cab37c5a"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedTrainIndex": {
@@ -1049,6 +1588,365 @@
           0,
           2
         ]
+      },
+      "verified": {
+        "value": [
+          74,
+          26,
+          45,
+          389,
+          154,
+          4,
+          386,
+          225,
+          327,
+          264,
+          8,
+          190,
+          5,
+          371,
+          200,
+          313,
+          7,
+          325,
+          366,
+          22,
+          68,
+          437,
+          20,
+          353,
+          281,
+          14,
+          300,
+          240,
+          175,
+          405,
+          153,
+          75,
+          64,
+          55,
+          135,
+          329,
+          81,
+          316,
+          369,
+          328,
+          414,
+          421,
+          361,
+          415,
+          232,
+          224,
+          252,
+          254,
+          418,
+          106,
+          278,
+          63,
+          336,
+          378,
+          387,
+          430,
+          89,
+          93,
+          245,
+          272,
+          241,
+          92,
+          18,
+          145,
+          150,
+          322,
+          393,
+          297,
+          231,
+          66,
+          380,
+          412,
+          140,
+          101,
+          345,
+          247,
+          363,
+          17,
+          146,
+          315,
+          220,
+          30,
+          114,
+          235,
+          103,
+          219,
+          274,
+          176,
+          191,
+          116,
+          168,
+          367,
+          120,
+          218,
+          112,
+          303,
+          136,
+          308,
+          221,
+          126,
+          196,
+          332,
+          424,
+          133,
+          33,
+          419,
+          162,
+          34,
+          44,
+          97,
+          85,
+          61,
+          167,
+          199,
+          173,
+          229,
+          236,
+          433,
+          376,
+          250,
+          108,
+          407,
+          46,
+          357,
+          372,
+          263,
+          73,
+          137,
+          422,
+          246,
+          253,
+          29,
+          181,
+          374,
+          301,
+          51,
+          365,
+          391,
+          217,
+          432,
+          27,
+          2,
+          259,
+          156,
+          255,
+          417,
+          346,
+          138,
+          212,
+          104,
+          310,
+          306,
+          311,
+          215,
+          348,
+          189,
+          214,
+          35,
+          230,
+          204,
+          234,
+          293,
+          239,
+          210,
+          67,
+          24,
+          295,
+          216,
+          223,
+          129,
+          111,
+          166,
+          349,
+          40,
+          317,
+          79,
+          431,
+          350,
+          13,
+          364,
+          436,
+          228,
+          161,
+          83,
+          439,
+          416,
+          110,
+          149,
+          152,
+          16,
+          299,
+          109,
+          312,
+          139,
+          237,
+          260,
+          318,
+          355,
+          248,
+          342,
+          19,
+          269,
+          226,
+          340,
+          3,
+          309,
+          125,
+          280,
+          286,
+          77,
+          184,
+          354,
+          420,
+          275,
+          294,
+          384,
+          182,
+          395,
+          80,
+          307,
+          258,
+          11,
+          331,
+          86,
+          266,
+          36,
+          423,
+          58,
+          41,
+          270,
+          50,
+          209,
+          352,
+          351,
+          368,
+          123,
+          222,
+          62,
+          379,
+          130,
+          187,
+          23,
+          43,
+          0,
+          201,
+          377,
+          98,
+          304,
+          429,
+          178,
+          256,
+          94,
+          409,
+          95,
+          390,
+          169,
+          69,
+          305,
+          48,
+          341,
+          207,
+          279,
+          227,
+          148,
+          143,
+          334,
+          180,
+          356,
+          131,
+          425,
+          440,
+          262,
+          324,
+          203,
+          84,
+          121,
+          383,
+          406,
+          91,
+          82,
+          267,
+          119,
+          358,
+          291,
+          57,
+          321,
+          257,
+          394,
+          42,
+          105,
+          408,
+          273,
+          392,
+          38,
+          53,
+          385,
+          128,
+          290,
+          28,
+          183,
+          370,
+          163,
+          151,
+          244,
+          202,
+          31,
+          32,
+          127,
+          185,
+          413,
+          288,
+          398,
+          402,
+          147,
+          285,
+          410,
+          177,
+          99,
+          338,
+          335,
+          197,
+          243,
+          115,
+          404,
+          265,
+          72,
+          333,
+          25,
+          165,
+          337,
+          426,
+          174,
+          428,
+          39,
+          193,
+          314,
+          396,
+          88,
+          70,
+          87,
+          292,
+          242,
+          277,
+          211,
+          9,
+          359,
+          195,
+          251,
+          323,
+          192,
+          117,
+          47,
+          172
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedTestIndex": {
@@ -1067,6 +1965,101 @@
           1,
           3
         ]
+      },
+      "verified": {
+        "value": [
+          362,
+          249,
+          271,
+          435,
+          400,
+          403,
+          12,
+          399,
+          198,
+          205,
+          78,
+          144,
+          298,
+          171,
+          268,
+          21,
+          194,
+          1,
+          10,
+          208,
+          76,
+          37,
+          388,
+          411,
+          289,
+          100,
+          261,
+          401,
+          319,
+          206,
+          375,
+          283,
+          373,
+          344,
+          287,
+          360,
+          179,
+          238,
+          434,
+          302,
+          158,
+          118,
+          339,
+          397,
+          330,
+          296,
+          164,
+          54,
+          157,
+          71,
+          284,
+          6,
+          343,
+          326,
+          159,
+          15,
+          320,
+          60,
+          282,
+          142,
+          56,
+          124,
+          107,
+          132,
+          382,
+          102,
+          160,
+          141,
+          186,
+          441,
+          90,
+          59,
+          347,
+          233,
+          427,
+          65,
+          438,
+          155,
+          122,
+          276,
+          188,
+          96,
+          170,
+          113,
+          381,
+          213,
+          134,
+          49,
+          52
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "splitInputSampleCount": {
@@ -1082,6 +2075,11 @@
           "shape",
           0
         ]
+      },
+      "verified": {
+        "value": 442,
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedSplitSeeds": {
@@ -1092,6 +2090,13 @@
       "args": {
         "function": "sklearn.model_selection.train_test_split",
         "setting": "random_state"
+      },
+      "verified": {
+        "value": [
+          "0"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedFitCalls": {
@@ -1102,6 +2107,37 @@
       "args": {
         "function": "sklearn.linear_model.LinearRegression.fit",
         "with_model_parameters": true
+      },
+      "verified": {
+        "value": [
+          {
+            "functionName": "sklearn.linear_model.LinearRegression.fit",
+            "arguments": [
+              [
+                "copy_X",
+                "True"
+              ],
+              [
+                "fit_intercept",
+                "True"
+              ],
+              [
+                "n_jobs",
+                "None"
+              ],
+              [
+                "positive",
+                "False"
+              ],
+              [
+                "tol",
+                "1e-06"
+              ]
+            ]
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "splitTrainChecksums": {
@@ -1123,6 +2159,14 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "70323a8098e3c578d0edefb350edc8e507a49b6d529100ce7cf4a16f26bee61f",
+          "2b8a2fe43d954c656ea8e2cb0b7e678e8f7afa3f73f15ec046c37dce44522841"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "fitInputChecksums": {
@@ -1144,6 +2188,14 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "70323a8098e3c578d0edefb350edc8e507a49b6d529100ce7cf4a16f26bee61f",
+          "2b8a2fe43d954c656ea8e2cb0b7e678e8f7afa3f73f15ec046c37dce44522841"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "fitInputIndex": {
@@ -1162,6 +2214,365 @@
           "X",
           "y"
         ]
+      },
+      "verified": {
+        "value": [
+          74,
+          26,
+          45,
+          389,
+          154,
+          4,
+          386,
+          225,
+          327,
+          264,
+          8,
+          190,
+          5,
+          371,
+          200,
+          313,
+          7,
+          325,
+          366,
+          22,
+          68,
+          437,
+          20,
+          353,
+          281,
+          14,
+          300,
+          240,
+          175,
+          405,
+          153,
+          75,
+          64,
+          55,
+          135,
+          329,
+          81,
+          316,
+          369,
+          328,
+          414,
+          421,
+          361,
+          415,
+          232,
+          224,
+          252,
+          254,
+          418,
+          106,
+          278,
+          63,
+          336,
+          378,
+          387,
+          430,
+          89,
+          93,
+          245,
+          272,
+          241,
+          92,
+          18,
+          145,
+          150,
+          322,
+          393,
+          297,
+          231,
+          66,
+          380,
+          412,
+          140,
+          101,
+          345,
+          247,
+          363,
+          17,
+          146,
+          315,
+          220,
+          30,
+          114,
+          235,
+          103,
+          219,
+          274,
+          176,
+          191,
+          116,
+          168,
+          367,
+          120,
+          218,
+          112,
+          303,
+          136,
+          308,
+          221,
+          126,
+          196,
+          332,
+          424,
+          133,
+          33,
+          419,
+          162,
+          34,
+          44,
+          97,
+          85,
+          61,
+          167,
+          199,
+          173,
+          229,
+          236,
+          433,
+          376,
+          250,
+          108,
+          407,
+          46,
+          357,
+          372,
+          263,
+          73,
+          137,
+          422,
+          246,
+          253,
+          29,
+          181,
+          374,
+          301,
+          51,
+          365,
+          391,
+          217,
+          432,
+          27,
+          2,
+          259,
+          156,
+          255,
+          417,
+          346,
+          138,
+          212,
+          104,
+          310,
+          306,
+          311,
+          215,
+          348,
+          189,
+          214,
+          35,
+          230,
+          204,
+          234,
+          293,
+          239,
+          210,
+          67,
+          24,
+          295,
+          216,
+          223,
+          129,
+          111,
+          166,
+          349,
+          40,
+          317,
+          79,
+          431,
+          350,
+          13,
+          364,
+          436,
+          228,
+          161,
+          83,
+          439,
+          416,
+          110,
+          149,
+          152,
+          16,
+          299,
+          109,
+          312,
+          139,
+          237,
+          260,
+          318,
+          355,
+          248,
+          342,
+          19,
+          269,
+          226,
+          340,
+          3,
+          309,
+          125,
+          280,
+          286,
+          77,
+          184,
+          354,
+          420,
+          275,
+          294,
+          384,
+          182,
+          395,
+          80,
+          307,
+          258,
+          11,
+          331,
+          86,
+          266,
+          36,
+          423,
+          58,
+          41,
+          270,
+          50,
+          209,
+          352,
+          351,
+          368,
+          123,
+          222,
+          62,
+          379,
+          130,
+          187,
+          23,
+          43,
+          0,
+          201,
+          377,
+          98,
+          304,
+          429,
+          178,
+          256,
+          94,
+          409,
+          95,
+          390,
+          169,
+          69,
+          305,
+          48,
+          341,
+          207,
+          279,
+          227,
+          148,
+          143,
+          334,
+          180,
+          356,
+          131,
+          425,
+          440,
+          262,
+          324,
+          203,
+          84,
+          121,
+          383,
+          406,
+          91,
+          82,
+          267,
+          119,
+          358,
+          291,
+          57,
+          321,
+          257,
+          394,
+          42,
+          105,
+          408,
+          273,
+          392,
+          38,
+          53,
+          385,
+          128,
+          290,
+          28,
+          183,
+          370,
+          163,
+          151,
+          244,
+          202,
+          31,
+          32,
+          127,
+          185,
+          413,
+          288,
+          398,
+          402,
+          147,
+          285,
+          410,
+          177,
+          99,
+          338,
+          335,
+          197,
+          243,
+          115,
+          404,
+          265,
+          72,
+          333,
+          25,
+          165,
+          337,
+          426,
+          174,
+          428,
+          39,
+          193,
+          314,
+          396,
+          88,
+          70,
+          87,
+          292,
+          242,
+          277,
+          211,
+          9,
+          359,
+          195,
+          251,
+          323,
+          192,
+          117,
+          47,
+          172
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedPredictCalls": {
@@ -1171,6 +2582,16 @@
       "query": "observed_calls",
       "args": {
         "function": "sklearn.linear_model.LinearRegression.predict"
+      },
+      "verified": {
+        "value": [
+          {
+            "functionName": "sklearn.linear_model.LinearRegression.predict",
+            "arguments": []
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "fittedModelChecksums": {
@@ -1185,6 +2606,13 @@
             "modelStateAfter"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "402148cd5a19d5e63e9955a44bf7d940d2056062c8ac9e37f10469626dc9fd99"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "predictModelChecksums": {
@@ -1199,6 +2627,13 @@
             "modelStateBefore"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "402148cd5a19d5e63e9955a44bf7d940d2056062c8ac9e37f10469626dc9fd99"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "splitTestFeatureChecksums": {
@@ -1215,6 +2650,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "cfbf23f2c0936412306a944517de106054fe6fa3c92ed062c5e730829d943f11"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "predictInputChecksums": {
@@ -1231,6 +2673,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "cfbf23f2c0936412306a944517de106054fe6fa3c92ed062c5e730829d943f11"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "splitTestTargetChecksums": {
@@ -1247,6 +2696,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "5a6dab3d1946238cd5d730e475fb346baff5f25049cdd87b6912936f6c38c078"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "predictInputColumnChecksums": {
@@ -1263,6 +2719,24 @@
             "columnSha256s"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "65e855187582040b729e18b98a8bb5e183c47da247ea87f35d4317ea35d8052a",
+            "97afee3bb45f7ad98b5e70166e2a0c9e373e796951148b59b48165c08867fdec",
+            "92c9f91eee3c56c33d2606918e4d217b2a7e5dc65e0943086c539f15bc2f6279",
+            "98831f84c7ca80ff49344914f39e45f36c11825495d94f80da5f46336671b458",
+            "f4e7d87dc95dc77790a3f1122b1f35a08d9d30516764b1e82dba4aa8b4aca104",
+            "87f7a56fd3343abc362d352363f937d0e5c03ab381f279da250e54563d6c31fe",
+            "8ab2423b4234b6d0cefcf5c726cc7c5d1e474edc3371d0adf86a0f1947bdf568",
+            "6d27682e17170426d2df4b0e01b48fb8c050b382a0e7bb1e7912dfbdf9fb33d4",
+            "6ff791228055444127473fbdecbb8181a7ce2f8cb6f558f525c0abea89ff3065",
+            "5b089fb1619062f8d3c84c25ea04c8216a706c2c6b4dbc8fe4ef76024ed9c296"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedMetricCalls": {
@@ -1272,6 +2746,16 @@
       "query": "observed_calls",
       "args": {
         "function": "sklearn.metrics.mean_squared_error"
+      },
+      "verified": {
+        "value": [
+          {
+            "functionName": "sklearn.metrics.mean_squared_error",
+            "arguments": []
+          }
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "predictOutputChecksums": {
@@ -1288,6 +2772,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "4d5072bbb6afd343b97dfa8c431d0a669858bf0869e1d72e108c0ab266ec1258"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "metricPredictionChecksums": {
@@ -1304,6 +2795,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "4d5072bbb6afd343b97dfa8c431d0a669858bf0869e1d72e108c0ab266ec1258"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "metricTargetChecksums": {
@@ -1320,6 +2818,13 @@
             "sha256"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "5a6dab3d1946238cd5d730e475fb346baff5f25049cdd87b6912936f6c38c078"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "metricTargetSampleCounts": {
@@ -1337,6 +2842,13 @@
             0
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          89
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "metricPredictionSampleCounts": {
@@ -1354,6 +2866,13 @@
             0
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          89
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "metricReturnedValues": {
@@ -1369,6 +2888,13 @@
             "value"
           ]
         ]
+      },
+      "verified": {
+        "value": [
+          "3424.2593342986956"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedEnvironment": {
@@ -1378,6 +2904,22 @@
       "query": "artifact_json",
       "args": {
         "path": "environment.json"
+      },
+      "verified": {
+        "value": {
+          "osName": "Ubuntu",
+          "osVersion": "24.04",
+          "kernelRelease": "7.0.0-1017-azure",
+          "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+          "cpuArchitecture": "x86_64",
+          "physicalCoreCount": 2,
+          "logicalCpuCount": 4,
+          "memoryGibibytes": 16,
+          "gpuNames": [],
+          "nodeCount": 1
+        },
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "configuredParallelism": {
@@ -1390,6 +2932,15 @@
         "keys": [
           "configured"
         ]
+      },
+      "verified": {
+        "value": {
+          "threadCount": 1,
+          "processCount": 1,
+          "gpuCount": 0
+        },
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "finalMaxMemoryMebibytes": {
@@ -1403,6 +2954,11 @@
           "final",
           "maxMemoryMebibytes"
         ]
+      },
+      "verified": {
+        "value": 141,
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "sampledUsage": {
@@ -1415,6 +2971,16 @@
         "keys": [
           "sampled"
         ]
+      },
+      "verified": {
+        "value": {
+          "peakMemoryMebibytes": 140,
+          "peakThreadCount": 1,
+          "peakProcessCount": 1,
+          "peakGpuProcessCount": 0
+        },
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedCommit": {
@@ -1427,6 +2993,11 @@
         "keys": [
           "commit"
         ]
+      },
+      "verified": {
+        "value": "9666bcaf7d9e4bc1e7e8734648f7e78d343c9149",
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedLanguage": {
@@ -1439,6 +3010,11 @@
         "keys": [
           "language"
         ]
+      },
+      "verified": {
+        "value": "CPython 3.13.3",
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedDependencies": {
@@ -1451,6 +3027,36 @@
         "keys": [
           "dependencies"
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "cloudpickle",
+            "3.1.3"
+          ],
+          [
+            "joblib",
+            "1.6.0"
+          ],
+          [
+            "numpy",
+            "2.3.4"
+          ],
+          [
+            "scikit-learn",
+            "1.7.2"
+          ],
+          [
+            "scipy",
+            "1.18.1"
+          ],
+          [
+            "threadpoolctl",
+            "3.8.0"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedSetupCommand": {
@@ -1463,6 +3069,17 @@
         "keys": [
           "setupCommand"
         ]
+      },
+      "verified": {
+        "value": [
+          "uv",
+          "sync",
+          "--frozen",
+          "--python",
+          "3.13.3"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedCommand": {
@@ -1475,6 +3092,14 @@
         "keys": [
           "command"
         ]
+      },
+      "verified": {
+        "value": [
+          ".venv/bin/python",
+          "src/run_experiment.py"
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     },
     "observedEnvironmentVariables": {
@@ -1487,6 +3112,28 @@
         "keys": [
           "environmentVariables"
         ]
+      },
+      "verified": {
+        "value": [
+          [
+            "CUDA_VISIBLE_DEVICES",
+            ""
+          ],
+          [
+            "MKL_NUM_THREADS",
+            "1"
+          ],
+          [
+            "OMP_NUM_THREADS",
+            "1"
+          ],
+          [
+            "OPENBLAS_NUM_THREADS",
+            "1"
+          ]
+        ],
+        "mode": "full",
+        "verify_run": "45671354628"
       }
     }
   },
