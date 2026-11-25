@@ -1,0 +1,21 @@
+{
+  "setup_command": ["uv", "sync", "--frozen", "--python", "3.13.3"],
+  "command": [".venv/bin/python", "src/run_experiment.py"],
+  "parallelism": {"threadCount": 1, "processCount": 1, "gpuCount": 0},
+  "datasets": [
+    {
+      "name": "diabetes",
+      "location": "https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt",
+      "path": "data/diabetes.tab.txt",
+      "sanity": {"sampleCount": 442, "columns": ["AGE", "SEX", "BMI", "BP", "S1", "S2", "S3", "S4", "S5", "S6", "Y"]}
+    }
+  ],
+  "observed_functions": [
+    "numpy.loadtxt",
+    "sklearn.model_selection.train_test_split",
+    "sklearn.linear_model.LinearRegression.fit",
+    "sklearn.linear_model.LinearRegression.predict",
+    "sklearn.metrics.mean_squared_error"
+  ],
+  "outputs": ["results/metrics.json", "data/diabetes.tab.txt"]
+}

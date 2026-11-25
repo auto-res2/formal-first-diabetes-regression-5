@@ -1,0 +1,32 @@
+name: run_experiment
+# run の名前の末尾に mode を入れる。検証器はこれで本番と試運転を見分ける
+run-name: run_experiment ${{ inputs.mode }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: full = 本番、sanity = 合成データでの試運転（結果は証拠にしない）
+        type: choice
+        options: [sanity, full]
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    steps:
+      # 宣言が指定する commit を取り出せるように、履歴をすべて取る
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      # どの commit を実行するかは formal/claims.json、その commit で何を用意し、何を実行し、何を残すかは formal/execution.json が決める
+      - run: python3 formal/cli.py run ${{ inputs.mode }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: run-output
+          path: run-output/
+          if-no-files-found: error

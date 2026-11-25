@@ -1,0 +1,10 @@
+data/
+results/
+.venv/
+__pycache__/
+run-output/
+execution/
+formal/lean/.lake/
+formal/lean/Candidates.lean
+# claims.json から生成する
+formal/lean/Spec.lean
