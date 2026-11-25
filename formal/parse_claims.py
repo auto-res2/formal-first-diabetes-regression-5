@@ -85,7 +85,7 @@ def load_schema() -> dict:
     if unused:
         raise ValueError(f"宣言が、上の claim の式か、下の信頼性条件で使われていない: {unused}")
     # 宣言の値は、declared で引数として渡す。信頼性条件の式の中で直接参照すると、どの宣言の検証かが読めなくなる
-    direct = [i for i, claim in claims.items() if i.startswith("R") and re.search(r"\bC\d\d\b", claim["proposition"].split(":=", 1)[1])]
+    direct = [i for i, claim in claims.items() if re.fullmatch(r"R\d\d", i) and re.search(r"\bC\d\d\b", claim["proposition"].split(":=", 1)[1])]
     if direct:
         raise ValueError(f"信頼性条件が、宣言を式の中で直接参照している: {direct}")
     return record
@@ -219,19 +219,6 @@ def judge(record: dict, axioms: dict, errors: dict[str, str]) -> dict[str, dict]
         failed = [i for i in claim.get("derived", {}).get("from", [])
                   if not (results[i]["status"] == "unverifiable" and results[i]["axiom"]) and results[i].get("verdict") != "真"]
         result["reason"] = ("成り立たなかった前提: " + "、".join(failed)) if failed else "真の定理も偽の定理も通らなかった"
-    # 信頼性の伝播: C の下にある信頼性条件（下の C の分も含む）の判定を集める。C そのものの判定は変えない
-    def below(parent: str) -> list[str]:
-        return [i for claim in record["claims"] if claim["parent"] == parent
-                for i in ([claim["id"]] if claim["id"].startswith("R") else below(claim["id"]))]
-    for claim in record["claims"]:
-        conditions = below(claim["id"])
-        if not conditions:
-            continue
-        false = [i for i in conditions if results[i].get("verdict") == "偽"]
-        unverifiable = [i for i in conditions if results[i]["status"] == "unverifiable"]
-        unknown = [i for i in conditions if results[i].get("verdict") != "真" and i not in false and i not in unverifiable]
-        results[claim["id"]]["reliability"] = {"status": "偽" if false else "不明" if unknown else "真",
-                                               "false": false, "unknown": unknown, "unverifiable": unverifiable}
     return results
 
 
@@ -240,7 +227,14 @@ def write_theorems(record: dict, results: dict, available: set[str]) -> None:
     keep = {f"{name}_{'holds' if result['verdict'] == '真' else 'fails'}" for name, result in results.items() if "verdict" in result}
     lines = HEADER + ["/-! 各命題の判定。parse_claims.py が生成する。手で編集しない。 -/"]
     for line in candidates(record, available):
-        theorem = re.match(r"theorem (\w+)", line)
+        theorem = re.match(r"theorem ([\w.]+)", line)
         if line.startswith("axiom ") or (theorem and theorem.group(1) in keep):
             lines.append(line)
+    # 最後に言うこと（メインの claim の成立と、その信頼性条件の成立）に、名前を付ける
+    claims = {claim["id"]: claim for claim in record["claims"]}
+    for name, claim_id in record["conclusions"].items():
+        if "verdict" in results[claim_id]:
+            holds = results[claim_id]["verdict"] == "真"
+            statement = _statement(claims[claim_id])
+            lines.append(f"theorem {name} : {statement if holds else f'¬ ({statement})'} := {claim_id}_{'holds' if holds else 'fails'}")
     (LEAN / "Theorems.lean").write_text("\n".join(lines) + "\n", encoding="utf-8")

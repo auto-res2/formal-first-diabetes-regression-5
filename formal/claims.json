@@ -1,5 +1,9 @@
 {
   "instruction": "Efron らの糖尿病データセットに線形回帰モデルを当てはめ，テストデータに対する MSE が 3400 を下回るかを調べる",
+  "conclusions": {
+    "main_claim": "C01",
+    "main_reliability": "Reliable.C01"
+  },
   "lean_order": [
     "C03",
     "C04",
@@ -47,10 +51,30 @@
     "R34",
     "R35",
     "R36",
-    "R37"
+    "R37",
+    "Reliable.C03",
+    "Reliable.C04",
+    "Reliable.C05",
+    "Reliable.C06",
+    "Reliable.C07",
+    "Reliable.C08",
+    "Reliable.C09",
+    "Reliable.C10",
+    "Reliable.C02",
+    "Reliable.C01"
   ],
   "derived_order": [
-    "C01"
+    "C01",
+    "Reliable.C03",
+    "Reliable.C04",
+    "Reliable.C05",
+    "Reliable.C06",
+    "Reliable.C07",
+    "Reliable.C08",
+    "Reliable.C09",
+    "Reliable.C10",
+    "Reliable.C02",
+    "Reliable.C01"
   ],
   "claims": [
     {
@@ -643,6 +667,225 @@
       "verifier": "GitHub",
       "declared": {
         "declaredCode": "C10.value"
+      }
+    },
+    {
+      "id": "Reliable.C01",
+      "parent": null,
+      "reliability_of": "C01",
+      "group": "メインの claim",
+      "explanation": "C01（メインの claim）は、信頼性条件を満たす。\n- Reliable.C02 が成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C01 (preparedDatasets : List Dataset) (observedLoadCalls : List Call)\n    (loadedFileChecksums : List String) (loadedShapes : List (List ℕ))\n    (preparedFileColumnChecksums : List (List String)) (loadedColumnChecksums : List (List String))\n    (observedFeatureColumns : List String) (observedTargetColumn : String)\n    (observedSplitCalls : List Call) (splitInputColumnChecksums : List (List String))\n    (observedTrainIndex : List ℕ) (observedTestIndex : List ℕ) (splitInputSampleCount : ℕ)\n    (observedSplitSeeds : List String) (observedFitCalls : List Call)\n    (splitTrainChecksums : List String) (fitInputChecksums : List String) (fitInputIndex : List ℕ)\n    (observedPredictCalls : List Call) (fittedModelChecksums : List String)\n    (predictModelChecksums : List String) (splitTestFeatureChecksums : List String)\n    (predictInputChecksums : List String) (splitTestTargetChecksums : List String)\n    (predictInputColumnChecksums : List (List String)) (observedMetricCalls : List Call)\n    (predictOutputChecksums : List String) (metricPredictionChecksums : List String)\n    (metricTargetChecksums : List String) (metricTargetSampleCounts : List ℕ)\n    (metricPredictionSampleCounts : List ℕ) (metricReturnedValues : List ℚ) (outputTestMse : ℚ)\n    (observedEnvironment : Environment) (configuredParallelism : Parallelism)\n    (finalMaxMemoryMebibytes : ℕ) (sampledUsage : SampledUsage) (observedCommit : String)\n    (observedLanguage : String) (observedDependencies : List (String × String))\n    (observedSetupCommand : List String) (observedCommand : List String)\n    (observedEnvironmentVariables : List (String × String)) : Prop :=\n  Reliable.C02 preparedDatasets observedLoadCalls loadedFileChecksums loadedShapes\n    preparedFileColumnChecksums loadedColumnChecksums observedFeatureColumns observedTargetColumn\n    observedSplitCalls splitInputColumnChecksums observedTrainIndex observedTestIndex\n    splitInputSampleCount observedSplitSeeds observedFitCalls splitTrainChecksums fitInputChecksums\n    fitInputIndex observedPredictCalls fittedModelChecksums predictModelChecksums\n    splitTestFeatureChecksums predictInputChecksums splitTestTargetChecksums\n    predictInputColumnChecksums observedMetricCalls predictOutputChecksums\n    metricPredictionChecksums metricTargetChecksums metricTargetSampleCounts\n    metricPredictionSampleCounts metricReturnedValues outputTestMse observedEnvironment\n    configuredParallelism finalMaxMemoryMebibytes sampledUsage observedCommit observedLanguage\n    observedDependencies observedSetupCommand observedCommand observedEnvironmentVariables",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C01_of_conditions",
+        "from": [
+          "Reliable.C02"
+        ],
+        "paths": {
+          "Reliable.C02": "h"
+        }
+      }
+    },
+    {
+      "id": "Reliable.C02",
+      "parent": null,
+      "reliability_of": "C02",
+      "group": "再現性条件",
+      "explanation": "C02（再現性条件）は、信頼性条件を満たす。\n- Reliable.C03、Reliable.C04、Reliable.C05、Reliable.C06、Reliable.C07、Reliable.C08、Reliable.C09、Reliable.C10 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C02 (preparedDatasets : List Dataset) (observedLoadCalls : List Call)\n    (loadedFileChecksums : List String) (loadedShapes : List (List ℕ))\n    (preparedFileColumnChecksums : List (List String)) (loadedColumnChecksums : List (List String))\n    (observedFeatureColumns : List String) (observedTargetColumn : String)\n    (observedSplitCalls : List Call) (splitInputColumnChecksums : List (List String))\n    (observedTrainIndex : List ℕ) (observedTestIndex : List ℕ) (splitInputSampleCount : ℕ)\n    (observedSplitSeeds : List String) (observedFitCalls : List Call)\n    (splitTrainChecksums : List String) (fitInputChecksums : List String) (fitInputIndex : List ℕ)\n    (observedPredictCalls : List Call) (fittedModelChecksums : List String)\n    (predictModelChecksums : List String) (splitTestFeatureChecksums : List String)\n    (predictInputChecksums : List String) (splitTestTargetChecksums : List String)\n    (predictInputColumnChecksums : List (List String)) (observedMetricCalls : List Call)\n    (predictOutputChecksums : List String) (metricPredictionChecksums : List String)\n    (metricTargetChecksums : List String) (metricTargetSampleCounts : List ℕ)\n    (metricPredictionSampleCounts : List ℕ) (metricReturnedValues : List ℚ) (outputTestMse : ℚ)\n    (observedEnvironment : Environment) (configuredParallelism : Parallelism)\n    (finalMaxMemoryMebibytes : ℕ) (sampledUsage : SampledUsage) (observedCommit : String)\n    (observedLanguage : String) (observedDependencies : List (String × String))\n    (observedSetupCommand : List String) (observedCommand : List String)\n    (observedEnvironmentVariables : List (String × String)) : Prop :=\n  Reliable.C03 preparedDatasets ∧\n  Reliable.C04 observedLoadCalls preparedDatasets loadedFileChecksums loadedShapes\n    preparedFileColumnChecksums loadedColumnChecksums observedFeatureColumns observedTargetColumn ∧\n  Reliable.C05 observedSplitCalls loadedColumnChecksums splitInputColumnChecksums observedTrainIndex\n    observedTestIndex splitInputSampleCount observedSplitSeeds ∧\n  Reliable.C06 observedFitCalls splitTrainChecksums fitInputChecksums fitInputIndex observedTestIndex ∧\n  Reliable.C07 observedPredictCalls fittedModelChecksums predictModelChecksums\n    splitTestFeatureChecksums predictInputChecksums splitTestTargetChecksums\n    predictInputColumnChecksums ∧\n  Reliable.C08 observedMetricCalls predictOutputChecksums metricPredictionChecksums\n    splitTestTargetChecksums metricTargetChecksums metricTargetSampleCounts\n    metricPredictionSampleCounts metricReturnedValues outputTestMse ∧\n  Reliable.C09 observedEnvironment configuredParallelism finalMaxMemoryMebibytes sampledUsage ∧\n  Reliable.C10 observedCommit observedLanguage observedDependencies observedSetupCommand\n    observedCommand observedEnvironmentVariables",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C02_of_conditions",
+        "from": [
+          "Reliable.C03",
+          "Reliable.C04",
+          "Reliable.C05",
+          "Reliable.C06",
+          "Reliable.C07",
+          "Reliable.C08",
+          "Reliable.C09",
+          "Reliable.C10"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C03",
+      "parent": null,
+      "reliability_of": "C03",
+      "group": "データセットのダウンロード",
+      "explanation": "C03（データセットのダウンロード）は、信頼性条件を満たす。\n- R01、R02、R03 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C03 (preparedDatasets : List Dataset) : Prop :=\n  R01 C03.value preparedDatasets ∧\n  R02 C03.value preparedDatasets ∧\n  R03 C03.value preparedDatasets",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C03_of_conditions",
+        "from": [
+          "R01",
+          "R02",
+          "R03"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C04",
+      "parent": null,
+      "reliability_of": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "C04（データセットの読み込み）は、信頼性条件を満たす。\n- R04、R05、R06、R07、R08、R09 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C04 (observedLoadCalls : List Call) (preparedDatasets : List Dataset)\n    (loadedFileChecksums : List String) (loadedShapes : List (List ℕ))\n    (preparedFileColumnChecksums : List (List String)) (loadedColumnChecksums : List (List String))\n    (observedFeatureColumns : List String) (observedTargetColumn : String) : Prop :=\n  R04 C04.value ∧\n  R05 C04.value observedLoadCalls ∧\n  R06 preparedDatasets loadedFileChecksums ∧\n  R07 preparedDatasets loadedShapes ∧\n  R08 preparedFileColumnChecksums loadedColumnChecksums ∧\n  R09 C04.value observedFeatureColumns observedTargetColumn",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C04_of_conditions",
+        "from": [
+          "R04",
+          "R05",
+          "R06",
+          "R07",
+          "R08",
+          "R09"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C05",
+      "parent": null,
+      "reliability_of": "C05",
+      "group": "データセットの分割",
+      "explanation": "C05（データセットの分割）は、信頼性条件を満たす。\n- R10、R11、R12、R13、R14、R15、R16、R17 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C05 (observedSplitCalls : List Call) (loadedColumnChecksums : List (List String))\n    (splitInputColumnChecksums : List (List String)) (observedTrainIndex : List ℕ)\n    (observedTestIndex : List ℕ) (splitInputSampleCount : ℕ) (observedSplitSeeds : List String) : Prop :=\n  R10 C05.value ∧\n  R11 C05.value observedSplitCalls ∧\n  R12 loadedColumnChecksums splitInputColumnChecksums ∧\n  R13 observedTrainIndex observedTestIndex ∧\n  R14 splitInputSampleCount observedTrainIndex observedTestIndex ∧\n  R15 ∧\n  R16 C05.value observedSplitSeeds ∧\n  R17 C05.value",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C05_of_conditions",
+        "from": [
+          "R10",
+          "R11",
+          "R12",
+          "R13",
+          "R14",
+          "R15",
+          "R16",
+          "R17"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C06",
+      "parent": null,
+      "reliability_of": "C06",
+      "group": "学習・フィッティング",
+      "explanation": "C06（学習・フィッティング）は、信頼性条件を満たす。\n- R18、R19、R20、R21 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C06 (observedFitCalls : List Call) (splitTrainChecksums : List String)\n    (fitInputChecksums : List String) (fitInputIndex : List ℕ) (observedTestIndex : List ℕ) : Prop :=\n  R18 C06.value ∧\n  R19 C06.value observedFitCalls ∧\n  R20 splitTrainChecksums fitInputChecksums ∧\n  R21 fitInputIndex observedTestIndex",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C06_of_conditions",
+        "from": [
+          "R18",
+          "R19",
+          "R20",
+          "R21"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C07",
+      "parent": null,
+      "reliability_of": "C07",
+      "group": "推論・予測",
+      "explanation": "C07（推論・予測）は、信頼性条件を満たす。\n- R22、R23、R24、R25、R26 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C07 (observedPredictCalls : List Call) (fittedModelChecksums : List String)\n    (predictModelChecksums : List String) (splitTestFeatureChecksums : List String)\n    (predictInputChecksums : List String) (splitTestTargetChecksums : List String)\n    (predictInputColumnChecksums : List (List String)) : Prop :=\n  R22 C07.value ∧\n  R23 C07.value observedPredictCalls ∧\n  R24 fittedModelChecksums predictModelChecksums ∧\n  R25 splitTestFeatureChecksums predictInputChecksums ∧\n  R26 splitTestTargetChecksums predictInputColumnChecksums",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C07_of_conditions",
+        "from": [
+          "R22",
+          "R23",
+          "R24",
+          "R25",
+          "R26"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C08",
+      "parent": null,
+      "reliability_of": "C08",
+      "group": "評価指標の計算",
+      "explanation": "C08（評価指標の計算）は、信頼性条件を満たす。\n- R27、R28、R29、R30、R31、R32 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C08 (observedMetricCalls : List Call) (predictOutputChecksums : List String)\n    (metricPredictionChecksums : List String) (splitTestTargetChecksums : List String)\n    (metricTargetChecksums : List String) (metricTargetSampleCounts : List ℕ)\n    (metricPredictionSampleCounts : List ℕ) (metricReturnedValues : List ℚ) (outputTestMse : ℚ) : Prop :=\n  R27 C08.value ∧\n  R28 C08.value observedMetricCalls ∧\n  R29 predictOutputChecksums metricPredictionChecksums ∧\n  R30 splitTestTargetChecksums metricTargetChecksums ∧\n  R31 metricTargetSampleCounts metricPredictionSampleCounts ∧\n  R32 metricReturnedValues outputTestMse",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C08_of_conditions",
+        "from": [
+          "R27",
+          "R28",
+          "R29",
+          "R30",
+          "R31",
+          "R32"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C09",
+      "parent": null,
+      "reliability_of": "C09",
+      "group": "ハードウェア・OS",
+      "explanation": "C09（ハードウェア・OS）は、信頼性条件を満たす。\n- R33、R34 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C09 (observedEnvironment : Environment) (configuredParallelism : Parallelism)\n    (finalMaxMemoryMebibytes : ℕ) (sampledUsage : SampledUsage) : Prop :=\n  R33 C09.value observedEnvironment configuredParallelism finalMaxMemoryMebibytes ∧\n  R34 sampledUsage configuredParallelism finalMaxMemoryMebibytes",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C09_of_conditions",
+        "from": [
+          "R33",
+          "R34"
+        ]
+      }
+    },
+    {
+      "id": "Reliable.C10",
+      "parent": null,
+      "reliability_of": "C10",
+      "group": "コード・依存ライブラリ",
+      "explanation": "C10（コード・依存ライブラリ）は、信頼性条件を満たす。\n- R35、R36、R37 が、すべて成り立つ",
+      "definitions": "",
+      "proposition": "abbrev Reliable.C10 (observedCommit : String) (observedLanguage : String)\n    (observedDependencies : List (String × String)) (observedSetupCommand : List String)\n    (observedCommand : List String) (observedEnvironmentVariables : List (String × String)) : Prop :=\n  R35 C10.value observedCommit ∧\n  R36 C10.value observedLanguage observedDependencies ∧\n  R37 C10.value observedSetupCommand observedCommand observedEnvironmentVariables",
+      "main": false,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "Reliable_C10_of_conditions",
+        "from": [
+          "R35",
+          "R36",
+          "R37"
+        ]
       }
     }
   ],

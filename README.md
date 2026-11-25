@@ -19,7 +19,9 @@ C01（メインの claim）: 出力された MSE < 3400
 
 - C と C の線は、下の値や処理で、上の値や真偽が決まること
 - C と R の線は、その C に当てる信頼性条件。R が偽でも C は変わらず、その C の信頼性が偽になる
-- 信頼性は、R の判定を C03〜C10 → C02 → C01 と集めたもの（検証の結果の `reliability`）。Lean の命題にはしていない
+- 各 C の信頼性は、Lean の命題 `Reliable.C`。最下層の C では、その C の R の連言。上の C では、下の C の `Reliable` の連言
+  - `Reliable.C03 = R01 ∧ R02 ∧ R03`、`Reliable.C02 = Reliable.C03 ∧ … ∧ Reliable.C10`、`Reliable.C01 = Reliable.C02`
+- 最後に言うことは 2 つ。`main_claim`（C01。メインの claim の成立）と、`main_reliability`（`Reliable.C01`。メインの claim に対する信頼性条件の成立）
 - 「関数は、信頼できる」などの、検証器が無い R は、公理として置く（検証不能）
 
 ## 置いてあるもの
