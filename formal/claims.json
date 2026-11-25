@@ -175,7 +175,7 @@
       "id": "R01",
       "parent": "C03",
       "group": "データセットのダウンロード",
-      "explanation": "宣言したデータセットのURL またはパスは、すべて、用意したファイルの URL またはパスと一致する。",
+      "explanation": "宣言したデータセットの URL またはパスは、すべて、用意したファイルの URL またはパスと一致する。",
       "definitions": "",
       "proposition": "abbrev R01 (declaredDatasets preparedDatasets : List Dataset) : Prop :=\n  ∀ dataset ∈ declaredDatasets, ∃ prepared ∈ preparedDatasets, prepared.name = dataset.name ∧ prepared.location = dataset.location",
       "main": false,
