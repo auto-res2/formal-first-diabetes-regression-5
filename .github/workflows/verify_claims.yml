@@ -1,0 +1,42 @@
+name: verify_claims
+run-name: verify_claims ${{ inputs.mode }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 値の元にする run。full = 本番、sanity = 試運転（仕組みの確認用）
+        type: choice
+        options: [sanity, full]
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lean を入れる（版は formal/lean/lean-toolchain が決める）
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Mathlib のビルド済みのファイルを取得する
+        run: lake exe cache get
+        working-directory: formal/lean
+      # どの命題を判定するか、どの値をどこから取るかは formal/claims.json が決める
+      - run: python3 formal/cli.py verify ${{ inputs.mode }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-values
+          path: |
+            formal/claims.json
+            formal/lean/Spec.lean
+            formal/lean/Values.lean
+            formal/lean/Theorems.lean
+          if-no-files-found: error

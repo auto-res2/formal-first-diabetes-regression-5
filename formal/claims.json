@@ -1,0 +1,1255 @@
+{
+  "instruction": "Efron らの糖尿病データセットに線形回帰モデルを当てはめ，テストデータに対する MSE が 3400 を下回るかを調べる",
+  "lean_order": [
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10",
+    "C02",
+    "C01",
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R20",
+    "R21",
+    "R22",
+    "R23",
+    "R24",
+    "R25",
+    "R26",
+    "R27",
+    "R28",
+    "R29",
+    "R30",
+    "R31",
+    "R32",
+    "R33",
+    "R34",
+    "R35",
+    "R36",
+    "R37"
+  ],
+  "derived_order": [
+    "C01"
+  ],
+  "claims": [
+    {
+      "id": "C01",
+      "parent": null,
+      "group": "メインの claim",
+      "explanation": "出力された MSE は 3400 を下回る。\n- 宣言した手順で MSE が値として定まる（C02）ときに、値の比較で判定する",
+      "definitions": "",
+      "proposition": "abbrev C01 (outputTestMse : ℚ) : Prop := outputTestMse < 3400",
+      "main": true,
+      "kind": "derived",
+      "verifier": "Lean",
+      "derived": {
+        "theorem": "C01_of_C02",
+        "refutation": "not_C01_of_C02",
+        "from": [
+          "C02"
+        ],
+        "by_comparison": true
+      }
+    },
+    {
+      "id": "C02",
+      "parent": "C01",
+      "group": "再現性条件",
+      "explanation": "宣言した手順で、MSE が値として定まる。\n- C03〜C10 の宣言が、すべて成り立つ\n- その手順で、MSE が 1 つの有理数として定まる",
+      "definitions": "",
+      "proposition": "abbrev C02 : Prop :=\n  C03 ∧ C04 ∧ C05 ∧ C06 ∧ C07 ∧ C08 ∧ C09 ∧ C10 ∧ ∃ mse : ℚ, mse = specifiedTestMse",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C03",
+      "parent": "C02",
+      "group": "データセットのダウンロード",
+      "explanation": "Efron らの糖尿病データセットを使用する。\n- 配布元の URL からダウンロードする\n- ファイルのチェックサム（SHA-256）、件数（442 件）、列（説明変数 10 個と目的変数）を固定する",
+      "definitions": "abbrev sampleCount : ℕ := 442\nabbrev featureCount : ℕ := 10\n/-- データセットについて宣言する値。location は、URL またはパス。 -/\nstructure Dataset where\n  name : String\n  location : String\n  checksum : String\n  sampleCount : ℕ\n  columns : List String\n  deriving DecidableEq\n/-- 使用するデータセット。複数ありうるので、一覧にする。 -/\ndef C03.value : List Dataset :=\n  [{ name := \"diabetes\", location := \"https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt\",\n       checksum := \"4733febee697862c22139cdac87478a300ce0d101593deb07ed6c0f3328a99cd\",\n       sampleCount := sampleCount, columns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\", \"Y\"] }]",
+      "proposition": "abbrev C03 : Prop :=\n  C03.value =\n    [{ name := \"diabetes\", location := \"https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt\",\n       checksum := \"4733febee697862c22139cdac87478a300ce0d101593deb07ed6c0f3328a99cd\",\n       sampleCount := 442, columns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\", \"Y\"] }]",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C04",
+      "parent": "C02",
+      "group": "データセットの読み込み",
+      "explanation": "numpy.loadtxt を、skiprows=1（1 行目の列名を読み飛ばす）で使用する。\n- 1〜10 列目を説明変数、11 列目を目的変数とする",
+      "definitions": "/-- 実験のプロセスの中で記録された、関数の呼び出し。arguments は、渡された引数（設定値）の名前と値の表記。 -/\nstructure Call where\n  functionName : String\n  arguments : List (String × String)\n  deriving DecidableEq\n/-- 関数は、信頼できる（中身の無い記号）。 -/\nopaque FunctionIsTrustworthy (functionName : String) : Prop\n/-- 読み込みについて宣言する値。 -/\nstructure Load where\n  functionName : String\n  arguments : List (String × String)\n  featureColumns : List String\n  targetColumn : String\n  deriving DecidableEq\ndef C04.value : Load :=\n  { functionName := \"numpy.loadtxt\", arguments := [(\"skiprows\", \"1\")],\n      featureColumns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\"], targetColumn := \"Y\" }\n/-- NumPy の loadtxt が返す表の、説明変数の列。 -/\nopaque loadedFeatures (arguments : List (String × String)) : Fin sampleCount → Fin featureCount → ℝ\n/-- NumPy の loadtxt が返す表の、目的変数の列。 -/\nopaque loadedTarget (arguments : List (String × String)) : Fin sampleCount → ℝ\ndef features : Fin sampleCount → Fin featureCount → ℝ := loadedFeatures C04.value.arguments\ndef target : Fin sampleCount → ℝ := loadedTarget C04.value.arguments",
+      "proposition": "abbrev C04 : Prop :=\n  C04.value =\n    { functionName := \"numpy.loadtxt\", arguments := [(\"skiprows\", \"1\")],\n      featureColumns := [\"AGE\", \"SEX\", \"BMI\", \"BP\", \"S1\", \"S2\", \"S3\", \"S4\", \"S5\", \"S6\"], targetColumn := \"Y\" } ∧\n  features = loadedFeatures C04.value.arguments ∧ target = loadedTarget C04.value.arguments",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C05",
+      "parent": "C02",
+      "group": "データセットの分割",
+      "explanation": "train_test_split を、シード 0（random_state=0）、テストデータの割合 20%（test_size=0.2）で使用する。\n- ほかの引数は渡さない\n- テストデータ以外の行を訓練データとする",
+      "definitions": "/-- 乱数生成器は、指定したアルゴリズムで乱数を生成する（中身の無い記号）。 -/\nopaque RandomGeneratorFollowsAlgorithm (randomGenerator : String) : Prop\n/-- 分割について宣言する値。 -/\nstructure Split where\n  functionName : String\n  arguments : List (String × String)\n  randomGenerator : String\n  seed : String\n  deriving DecidableEq\ndef C05.value : Split :=\n  { functionName := \"sklearn.model_selection.train_test_split\",\n      arguments := [(\"test_size\", \"0.2\"), (\"random_state\", \"0\")],\n      randomGenerator := \"numpy.random.RandomState\", seed := \"0\" }\n/-- scikit-learn の train_test_split が返す、テストデータの行。 -/\nopaque trainTestSplit (arguments : List (String × String)) : Finset (Fin sampleCount)\ndef testRows : Finset (Fin sampleCount) := trainTestSplit C05.value.arguments\ndef trainRows : Finset (Fin sampleCount) := testRowsᶜ",
+      "proposition": "abbrev C05 : Prop :=\n  C05.value =\n    { functionName := \"sklearn.model_selection.train_test_split\",\n      arguments := [(\"test_size\", \"0.2\"), (\"random_state\", \"0\")],\n      randomGenerator := \"numpy.random.RandomState\", seed := \"0\" } ∧\n  testRows = trainTestSplit C05.value.arguments ∧ trainRows = testRowsᶜ",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C06",
+      "parent": "C02",
+      "group": "学習・フィッティング",
+      "explanation": "LinearRegression.fit を使用する。\n- LinearRegression には引数を渡さない（パラメータは既定値）\n- 訓練データの説明変数と目的変数を渡す",
+      "definitions": "/-- 学習について宣言する値。arguments は、引数（設定値）。ここでは、学習するときの LinearRegression のパラメータ。 -/\nstructure Fit where\n  functionName : String\n  arguments : List (String × String)\n  deriving DecidableEq\ndef C06.value : Fit :=\n  { functionName := \"sklearn.linear_model.LinearRegression.fit\",\n      arguments := [(\"copy_X\", \"True\"), (\"fit_intercept\", \"True\"), (\"n_jobs\", \"None\"), (\"positive\", \"False\"), (\"tol\", \"1e-06\")] }\nopaque FittedModelType : NonemptyType\n/-- 学習したモデル。 -/\ndef FittedModel : Type := FittedModelType.type\ninstance : Nonempty FittedModel := FittedModelType.property\n/-- scikit-learn の LinearRegression.fit が返す、学習したモデル。 -/\nnoncomputable opaque fit (arguments : List (String × String)) (rows : Finset (Fin sampleCount))\n    (features : Fin sampleCount → Fin featureCount → ℝ) (target : Fin sampleCount → ℝ) : FittedModel\nnoncomputable def fittedModel : FittedModel := fit C06.value.arguments trainRows features target",
+      "proposition": "abbrev C06 : Prop :=\n  C06.value =\n    { functionName := \"sklearn.linear_model.LinearRegression.fit\",\n      arguments := [(\"copy_X\", \"True\"), (\"fit_intercept\", \"True\"), (\"n_jobs\", \"None\"), (\"positive\", \"False\"), (\"tol\", \"1e-06\")] } ∧\n  fittedModel = fit C06.value.arguments trainRows features target",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C07",
+      "parent": "C02",
+      "group": "推論・予測",
+      "explanation": "LinearRegression.predict を使用する。\n- 学習したモデルに、テストデータの説明変数を渡す",
+      "definitions": "/-- 推論について宣言する値。 -/\nstructure Predict where\n  functionName : String\n  arguments : List (String × String)\n  deriving DecidableEq\ndef C07.value : Predict := { functionName := \"sklearn.linear_model.LinearRegression.predict\", arguments := [] }\n/-- scikit-learn の LinearRegression.predict が返す予測値。 -/\nopaque predict (model : FittedModel) (x : Fin featureCount → ℝ) : ℝ\nnoncomputable def prediction (i : Fin sampleCount) : ℝ := predict fittedModel (features i)",
+      "proposition": "abbrev C07 : Prop :=\n  C07.value = { functionName := \"sklearn.linear_model.LinearRegression.predict\", arguments := [] } ∧\n  prediction = fun i => predict fittedModel (features i)",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C08",
+      "parent": "C02",
+      "group": "評価指標の計算",
+      "explanation": "mean_squared_error を使用する。\n- テストデータの目的変数と予測値を渡す。ほかの引数は渡さない",
+      "definitions": "/-- 評価指標の計算について宣言する値。 -/\nstructure Metric where\n  functionName : String\n  arguments : List (String × String)\n  deriving DecidableEq\ndef C08.value : Metric := { functionName := \"sklearn.metrics.mean_squared_error\", arguments := [] }\n/-- scikit-learn の mean_squared_error が返す値。 -/\nopaque meanSquaredError (rows : Finset (Fin sampleCount)) (target prediction : Fin sampleCount → ℝ) : ℚ\n/-- 宣言したとおりに計算した、テストデータに対する MSE。 -/\nnoncomputable def specifiedTestMse : ℚ := meanSquaredError testRows target prediction",
+      "proposition": "abbrev C08 : Prop :=\n  C08.value = { functionName := \"sklearn.metrics.mean_squared_error\", arguments := [] } ∧\n  specifiedTestMse = meanSquaredError testRows target prediction",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C09",
+      "parent": "C02",
+      "group": "ハードウェア・OS",
+      "explanation": "Ubuntu 22.04、x86_64、12 コア、メモリ 8 GiB の計算機を 1 台使用する。\n- カーネルの版と CPU のデバイス名も固定する\n- 並列数は、スレッド 1、プロセス 1、GPU 0。メモリ使用量の上限は 1024 MiB\n- メモリの容量は、GiB の端数を切り上げて比べる",
+      "definitions": "/-- 計算機の OS、CPU、メモリ、GPU、台数。 -/\nstructure Environment where\n  osName : String\n  osVersion : String\n  kernelRelease : String\n  cpuModel : String\n  cpuArchitecture : String\n  physicalCoreCount : ℕ\n  logicalCpuCount : ℕ\n  memoryGibibytes : ℕ\n  gpuNames : List String\n  nodeCount : ℕ\n  deriving DecidableEq\n/-- 並列数。 -/\nstructure Parallelism where\n  threadCount : ℕ\n  processCount : ℕ\n  gpuCount : ℕ\n  deriving DecidableEq\n/-- 実験のプロセスの実行中に測った、最大の値。 -/\nstructure SampledUsage where\n  peakMemoryMebibytes : ℕ\n  peakThreadCount : ℕ\n  peakProcessCount : ℕ\n  peakGpuProcessCount : ℕ\n  deriving DecidableEq\n/-- ハードウェア・OS について宣言する値。 -/\nstructure HardwareAndOs where\n  environment : Environment\n  memoryUsageLimitMebibytes : ℕ\n  parallelism : Parallelism\n  deriving DecidableEq\ndef C09.value : HardwareAndOs :=\n  { environment :=\n        { osName := \"Ubuntu\", osVersion := \"22.04\", kernelRelease := \"5.15.146.1-microsoft-standard-WSL2\",\n          cpuModel := \"Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz\", cpuArchitecture := \"x86_64\",\n          physicalCoreCount := 6, logicalCpuCount := 12, memoryGibibytes := 8,\n          gpuNames := [], nodeCount := 1 },\n      memoryUsageLimitMebibytes := 1024,\n      parallelism := { threadCount := 1, processCount := 1, gpuCount := 0 } }",
+      "proposition": "abbrev C09 : Prop :=\n  C09.value =\n    { environment :=\n        { osName := \"Ubuntu\", osVersion := \"22.04\", kernelRelease := \"5.15.146.1-microsoft-standard-WSL2\",\n          cpuModel := \"Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz\", cpuArchitecture := \"x86_64\",\n          physicalCoreCount := 6, logicalCpuCount := 12, memoryGibibytes := 8,\n          gpuNames := [], nodeCount := 1 },\n      memoryUsageLimitMebibytes := 1024,\n      parallelism := { threadCount := 1, processCount := 1, gpuCount := 0 } }",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "C10",
+      "parent": "C02",
+      "group": "コード・依存ライブラリ",
+      "explanation": "このリポジトリの commit 9666bcaf7d9e4bc1e7e8734648f7e78d343c9149 のコードを使用する。\n- 実行に関するもの（実験コード、ライブラリの版を固定するファイル、実行の設定、観測の処理）は、すべてこの commit にある\n- 言語は CPython 3.13.3。依存ライブラリの版、実行コマンド、環境変数を固定する",
+      "definitions": "/-- コード・依存ライブラリについて宣言する値。 -/\nstructure Code where\n  commit : String\n  language : String\n  dependencies : List (String × String)\n  setupCommand : List String\n  command : List String\n  environmentVariables : List (String × String)\n  deriving DecidableEq\ndef C10.value : Code :=\n  { commit := \"9666bcaf7d9e4bc1e7e8734648f7e78d343c9149\",\n      language := \"CPython 3.13.3\",\n      dependencies := [(\"cloudpickle\", \"3.1.3\"), (\"joblib\", \"1.6.0\"), (\"numpy\", \"2.3.4\"), (\"scikit-learn\", \"1.7.2\"), (\"scipy\", \"1.18.1\"), (\"threadpoolctl\", \"3.8.0\")],\n      setupCommand := [\"uv\", \"sync\", \"--frozen\", \"--python\", \"3.13.3\"], command := [\".venv/bin/python\", \"src/run_experiment.py\"],\n      environmentVariables := [(\"CUDA_VISIBLE_DEVICES\", \"\"), (\"MKL_NUM_THREADS\", \"1\"), (\"OMP_NUM_THREADS\", \"1\"), (\"OPENBLAS_NUM_THREADS\", \"1\")] }",
+      "proposition": "abbrev C10 : Prop :=\n  C10.value =\n    { commit := \"9666bcaf7d9e4bc1e7e8734648f7e78d343c9149\",\n      language := \"CPython 3.13.3\",\n      dependencies := [(\"cloudpickle\", \"3.1.3\"), (\"joblib\", \"1.6.0\"), (\"numpy\", \"2.3.4\"), (\"scikit-learn\", \"1.7.2\"), (\"scipy\", \"1.18.1\"), (\"threadpoolctl\", \"3.8.0\")],\n      setupCommand := [\"uv\", \"sync\", \"--frozen\", \"--python\", \"3.13.3\"], command := [\".venv/bin/python\", \"src/run_experiment.py\"],\n      environmentVariables := [(\"CUDA_VISIBLE_DEVICES\", \"\"), (\"MKL_NUM_THREADS\", \"1\"), (\"OMP_NUM_THREADS\", \"1\"), (\"OPENBLAS_NUM_THREADS\", \"1\")] }",
+      "main": false,
+      "kind": "declaration",
+      "verifier": "Lean"
+    },
+    {
+      "id": "R01",
+      "parent": "C03",
+      "group": "データセットのダウンロード",
+      "explanation": "宣言したデータセットのURL またはパスは、すべて、用意したファイルの URL またはパスと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R01 (declaredDatasets preparedDatasets : List Dataset) : Prop :=\n  ∀ dataset ∈ declaredDatasets, ∃ prepared ∈ preparedDatasets, prepared.name = dataset.name ∧ prepared.location = dataset.location",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredDatasets": "C03.value"
+      }
+    },
+    {
+      "id": "R02",
+      "parent": "C03",
+      "group": "データセットのダウンロード",
+      "explanation": "宣言したデータセットのチェックサムは、すべて、用意したファイルのチェックサムと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R02 (declaredDatasets preparedDatasets : List Dataset) : Prop :=\n  ∀ dataset ∈ declaredDatasets, ∃ prepared ∈ preparedDatasets, prepared.name = dataset.name ∧ prepared.checksum = dataset.checksum",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredDatasets": "C03.value"
+      }
+    },
+    {
+      "id": "R03",
+      "parent": "C03",
+      "group": "データセットのダウンロード",
+      "explanation": "宣言したデータセットの件数と列は、すべて、用意したファイルの件数と列と一致する。",
+      "definitions": "",
+      "proposition": "abbrev R03 (declaredDatasets preparedDatasets : List Dataset) : Prop :=\n  ∀ dataset ∈ declaredDatasets, ∃ prepared ∈ preparedDatasets, prepared.name = dataset.name ∧ prepared.sampleCount = dataset.sampleCount ∧ prepared.columns = dataset.columns",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredDatasets": "C03.value"
+      }
+    },
+    {
+      "id": "R04",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "宣言した読み込みの関数は、信頼できる。",
+      "definitions": "",
+      "proposition": "abbrev R04 (declaredLoad : Load) : Prop := FunctionIsTrustworthy declaredLoad.functionName",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredLoad": "C04.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R05",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "宣言した読み込みの関数と引数は、すべてのデータセットで、実験時に使われたものと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R05 (declaredLoad : Load) (observedLoadCalls : List Call) : Prop :=\n  observedLoadCalls ≠ [] ∧\n  ∀ call ∈ observedLoadCalls, call = { functionName := declaredLoad.functionName, arguments := declaredLoad.arguments }",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredLoad": "C04.value"
+      }
+    },
+    {
+      "id": "R06",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "用意したファイルのチェックサムは、すべて、workflow ファイルが測った、実験時に読み込んだファイルのチェックサムと一致する。\n- 実験時に読み込んだファイルのチェックサムは、読み込みの関数が呼ばれた時点で、実験コードの外から測る",
+      "definitions": "",
+      "proposition": "abbrev R06 (preparedDatasets : List Dataset) (loadedFileChecksums : List String) : Prop :=\n  ∀ prepared ∈ preparedDatasets, prepared.checksum ∈ loadedFileChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R07",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "用意したファイルの件数と列数は、すべて、実験時に読み込んだデータの件数と列数と一致する。",
+      "definitions": "",
+      "proposition": "abbrev R07 (preparedDatasets : List Dataset) (loadedShapes : List (List ℕ)) : Prop :=\n  ∀ prepared ∈ preparedDatasets, [prepared.sampleCount, prepared.columns.length] ∈ loadedShapes",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R08",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "実験時に読み込んだデータの値は、すべて、用意したファイルの値と一致する。\n- 列ごとの値のチェックサムで比べる",
+      "definitions": "",
+      "proposition": "abbrev R08 (preparedFileColumnChecksums loadedColumnChecksums : List (List String)) : Prop :=\n  ∀ columns ∈ preparedFileColumnChecksums, columns ∈ loadedColumnChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R09",
+      "parent": "C04",
+      "group": "データセットの読み込み",
+      "explanation": "宣言した説明変数と目的変数の列は、すべてのデータセットで、実験時に読み込んだ列と一致する。\n- 実験時に読み込んだ列は、読み込んだ表のどの列が、次の関数（分割）に説明変数、目的変数として渡されたかで決める",
+      "definitions": "",
+      "proposition": "abbrev R09 (declaredLoad : Load) (observedFeatureColumns : List String) (observedTargetColumn : String) : Prop :=\n  observedFeatureColumns = declaredLoad.featureColumns ∧ observedTargetColumn = declaredLoad.targetColumn",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredLoad": "C04.value"
+      }
+    },
+    {
+      "id": "R10",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "宣言した分割の関数は、信頼できる。",
+      "definitions": "",
+      "proposition": "abbrev R10 (declaredSplit : Split) : Prop := FunctionIsTrustworthy declaredSplit.functionName",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredSplit": "C05.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R11",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "宣言した分割の関数と引数は、すべてのデータセットで、実験時に使われたものと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R11 (declaredSplit : Split) (observedSplitCalls : List Call) : Prop :=\n  observedSplitCalls ≠ [] ∧\n  ∀ call ∈ observedSplitCalls, call = { functionName := declaredSplit.functionName, arguments := declaredSplit.arguments }",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredSplit": "C05.value"
+      }
+    },
+    {
+      "id": "R12",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "前処理されたデータ（前処理が無ければ、読み込んだデータ）は、すべて、そのまま分割に渡されている。\n- この研究には前処理が無いので、読み込んだ表の列と、分割に渡された列を、値のチェックサムで比べる",
+      "definitions": "",
+      "proposition": "abbrev R12 (loadedColumnChecksums splitInputColumnChecksums : List (List String)) : Prop :=\n  loadedColumnChecksums ≠ [] ∧\n  ∀ loaded ∈ loadedColumnChecksums, ∃ passed ∈ splitInputColumnChecksums,\n    (∀ column ∈ loaded, column ∈ passed) ∧ (∀ column ∈ passed, column ∈ loaded)",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R13",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "どのデータセットでも、分けたデータの行は、互いに重ならない。",
+      "definitions": "",
+      "proposition": "abbrev R13 (observedTrainIndex observedTestIndex : List ℕ) : Prop :=\n  Disjoint observedTrainIndex.toFinset observedTestIndex.toFinset",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R14",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "どのデータセットでも、分けたデータの行を合わせると、分割に渡したデータの全件になる。",
+      "definitions": "",
+      "proposition": "abbrev R14 (splitInputSampleCount : ℕ) (observedTrainIndex observedTestIndex : List ℕ) : Prop :=\n  observedTrainIndex.toFinset ∪ observedTestIndex.toFinset = Finset.range splitInputSampleCount",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R15",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "agent は、テストデータの中身を閲覧していない。",
+      "definitions": "/-- agent は、テストデータの中身を閲覧していない（中身の無い記号）。 -/\nopaque AgentDidNotViewTestData : Prop",
+      "proposition": "abbrev R15 : Prop := AgentDidNotViewTestData",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "unverifiable": "Agent のログを検証する検証器が無い"
+    },
+    {
+      "id": "R16",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "実行が分割に使った乱数生成器とシードは、すべてのデータセットで、宣言と一致する。\n- 比べるのはシード。乱数生成器の種類は、関数の中で決まり、実験のプロセスの中の記録には現れない",
+      "definitions": "",
+      "proposition": "abbrev R16 (declaredSplit : Split) (observedSplitSeeds : List String) : Prop :=\n  observedSplitSeeds ≠ [] ∧ ∀ seed ∈ observedSplitSeeds, seed = declaredSplit.seed",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredSplit": "C05.value"
+      }
+    },
+    {
+      "id": "R17",
+      "parent": "C05",
+      "group": "データセットの分割",
+      "explanation": "乱数生成器は、指定したアルゴリズムで乱数を生成する。",
+      "definitions": "",
+      "proposition": "abbrev R17 (declaredSplit : Split) : Prop := RandomGeneratorFollowsAlgorithm declaredSplit.randomGenerator",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredSplit": "C05.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R18",
+      "parent": "C06",
+      "group": "学習・フィッティング",
+      "explanation": "宣言した学習の関数は、信頼できる。",
+      "definitions": "",
+      "proposition": "abbrev R18 (declaredFit : Fit) : Prop := FunctionIsTrustworthy declaredFit.functionName",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredFit": "C06.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R19",
+      "parent": "C06",
+      "group": "学習・フィッティング",
+      "explanation": "宣言した学習の関数と引数（設定値）は、すべてのモデル、データセット、試行で、実験時に使われたものと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R19 (declaredFit : Fit) (observedFitCalls : List Call) : Prop :=\n  observedFitCalls ≠ [] ∧\n  ∀ call ∈ observedFitCalls, call = { functionName := declaredFit.functionName, arguments := declaredFit.arguments }",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredFit": "C06.value"
+      }
+    },
+    {
+      "id": "R20",
+      "parent": "C06",
+      "group": "学習・フィッティング",
+      "explanation": "分割で得た訓練データは、すべて、そのまま学習に渡されている。\n- 説明変数と目的変数の、値のチェックサムで比べる",
+      "definitions": "",
+      "proposition": "abbrev R20 (splitTrainChecksums fitInputChecksums : List String) : Prop :=\n  splitTrainChecksums ≠ [] ∧ fitInputChecksums = splitTrainChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R21",
+      "parent": "C06",
+      "group": "学習・フィッティング",
+      "explanation": "どのモデル、どの試行でも、実験時に学習の関数に渡されたデータに、テストデータの行は含まれていない。",
+      "definitions": "",
+      "proposition": "abbrev R21 (fitInputIndex observedTestIndex : List ℕ) : Prop :=\n  Disjoint fitInputIndex.toFinset observedTestIndex.toFinset",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R22",
+      "parent": "C07",
+      "group": "推論・予測",
+      "explanation": "宣言した推論の関数は、信頼できる。",
+      "definitions": "",
+      "proposition": "abbrev R22 (declaredPredict : Predict) : Prop := FunctionIsTrustworthy declaredPredict.functionName",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredPredict": "C07.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R23",
+      "parent": "C07",
+      "group": "推論・予測",
+      "explanation": "宣言した推論の関数と引数（設定値）は、すべてのモデルとデータセットで、実験時に使われたものと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R23 (declaredPredict : Predict) (observedPredictCalls : List Call) : Prop :=\n  observedPredictCalls ≠ [] ∧\n  ∀ call ∈ observedPredictCalls, call = { functionName := declaredPredict.functionName, arguments := declaredPredict.arguments }",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredPredict": "C07.value"
+      }
+    },
+    {
+      "id": "R24",
+      "parent": "C07",
+      "group": "推論・予測",
+      "explanation": "学習したモデル（選択した場合は、選ばれたモデル）は、すべて、そのまま推論に渡されている。\n- 学習で決まったモデルの属性の、値のチェックサムで比べる",
+      "definitions": "",
+      "proposition": "abbrev R24 (fittedModelChecksums predictModelChecksums : List String) : Prop :=\n  fittedModelChecksums ≠ [] ∧ ∀ model ∈ fittedModelChecksums, model ∈ predictModelChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R25",
+      "parent": "C07",
+      "group": "推論・予測",
+      "explanation": "分割で得たテストデータの説明変数は、すべて、そのまま推論に渡されている。",
+      "definitions": "",
+      "proposition": "abbrev R25 (splitTestFeatureChecksums predictInputChecksums : List String) : Prop :=\n  splitTestFeatureChecksums ≠ [] ∧ ∀ features ∈ splitTestFeatureChecksums, features ∈ predictInputChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R26",
+      "parent": "C07",
+      "group": "推論・予測",
+      "explanation": "どのモデルでも、実験時に推論の関数に渡されたデータに、テストデータの目的変数は含まれていない。\n- 推論に渡された列ごとの値のチェックサムに、目的変数のチェックサムが無いことを見る",
+      "definitions": "",
+      "proposition": "abbrev R26 (splitTestTargetChecksums : List String) (predictInputColumnChecksums : List (List String)) : Prop :=\n  ∀ target ∈ splitTestTargetChecksums, ∀ columns ∈ predictInputColumnChecksums, target ∉ columns",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R27",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "宣言した評価指標の関数は、信頼できる。",
+      "definitions": "",
+      "proposition": "abbrev R27 (declaredMetric : Metric) : Prop := FunctionIsTrustworthy declaredMetric.functionName",
+      "main": false,
+      "kind": "axiom",
+      "verifier": null,
+      "declared": {
+        "declaredMetric": "C08.value"
+      },
+      "unverifiable": "形式化の忠実性検証の検証器が無い"
+    },
+    {
+      "id": "R28",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "宣言した評価指標の関数と引数（設定値）は、すべてのモデルとデータセットで、実験時に使われたものと一致する。",
+      "definitions": "",
+      "proposition": "abbrev R28 (declaredMetric : Metric) (observedMetricCalls : List Call) : Prop :=\n  observedMetricCalls ≠ [] ∧\n  ∀ call ∈ observedMetricCalls, call = { functionName := declaredMetric.functionName, arguments := declaredMetric.arguments }",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredMetric": "C08.value"
+      }
+    },
+    {
+      "id": "R29",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "推論が返した予測値は、すべて、そのまま評価指標の計算に渡されている。",
+      "definitions": "",
+      "proposition": "abbrev R29 (predictOutputChecksums metricPredictionChecksums : List String) : Prop :=\n  predictOutputChecksums ≠ [] ∧ ∀ prediction ∈ predictOutputChecksums, prediction ∈ metricPredictionChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R30",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "分割で得たテストデータの目的変数は、すべて、そのまま評価指標の計算に渡されている。",
+      "definitions": "",
+      "proposition": "abbrev R30 (splitTestTargetChecksums metricTargetChecksums : List String) : Prop :=\n  splitTestTargetChecksums ≠ [] ∧ ∀ target ∈ splitTestTargetChecksums, target ∈ metricTargetChecksums",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R31",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "どのモデルでも、渡された予測値と目的変数の行は、対応している。\n- 件数が同じであることを見る。行の並びは、R25、R29、R30（そのまま渡されている）から決まる",
+      "definitions": "",
+      "proposition": "abbrev R31 (metricTargetSampleCounts metricPredictionSampleCounts : List ℕ) : Prop :=\n  metricTargetSampleCounts ≠ [] ∧ metricTargetSampleCounts = metricPredictionSampleCounts",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R32",
+      "parent": "C08",
+      "group": "評価指標の計算",
+      "explanation": "評価指標の関数が返した値は、すべて、そのまま artifact に出力されている。",
+      "definitions": "",
+      "proposition": "abbrev R32 (metricReturnedValues : List ℚ) (outputTestMse : ℚ) : Prop :=\n  metricReturnedValues ≠ [] ∧ ∀ value ∈ metricReturnedValues, value = outputTestMse",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R33",
+      "parent": "C09",
+      "group": "ハードウェア・OS",
+      "explanation": "GitHub Actions の workflow ファイルで artifact に出力された値は、宣言と一致する。\n- 計算機の OS、CPU、メモリ、GPU、台数と、並列数は、宣言と同じ\n- 終了時に出力された最大のメモリ使用量は、宣言した上限以下",
+      "definitions": "",
+      "proposition": "abbrev R33 (declaredHardwareAndOs : HardwareAndOs) (observedEnvironment : Environment) (configuredParallelism : Parallelism)\n    (finalMaxMemoryMebibytes : ℕ) : Prop :=\n  observedEnvironment = declaredHardwareAndOs.environment ∧ configuredParallelism = declaredHardwareAndOs.parallelism ∧\n  finalMaxMemoryMebibytes ≤ declaredHardwareAndOs.memoryUsageLimitMebibytes",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredHardwareAndOs": "C09.value"
+      }
+    },
+    {
+      "id": "R34",
+      "parent": "C09",
+      "group": "ハードウェア・OS",
+      "explanation": "workflow ファイルがプロセスの実行中に測ったスレッド数、プロセス数、GPU を使うプロセスの数、メモリ使用量は、artifact に出力された値と矛盾しない。\n- 実行中に測った値が、渡した並列数と、終了時に出力された最大のメモリ使用量を超えないことを見る",
+      "definitions": "",
+      "proposition": "abbrev R34 (sampledUsage : SampledUsage) (configuredParallelism : Parallelism) (finalMaxMemoryMebibytes : ℕ) : Prop :=\n  sampledUsage.peakMemoryMebibytes ≤ finalMaxMemoryMebibytes ∧\n  sampledUsage.peakThreadCount ≤ configuredParallelism.threadCount * configuredParallelism.processCount ∧\n  sampledUsage.peakProcessCount ≤ configuredParallelism.processCount ∧\n  sampledUsage.peakGpuProcessCount ≤ configuredParallelism.gpuCount",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub"
+    },
+    {
+      "id": "R35",
+      "parent": "C10",
+      "group": "コード・依存ライブラリ",
+      "explanation": "workflow ファイルで artifact に出力された commit は、宣言と一致する。\n- 取り出した後に書き換えたファイルがあると、出力される commit に印が付き、一致しなくなる",
+      "definitions": "",
+      "proposition": "abbrev R35 (declaredCode : Code) (observedCommit : String) : Prop := observedCommit = declaredCode.commit",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredCode": "C10.value"
+      }
+    },
+    {
+      "id": "R36",
+      "parent": "C10",
+      "group": "コード・依存ライブラリ",
+      "explanation": "workflow ファイルで artifact に出力された言語、ランタイム、依存ライブラリの版は、宣言と一致する。",
+      "definitions": "",
+      "proposition": "abbrev R36 (declaredCode : Code) (observedLanguage : String) (observedDependencies : List (String × String)) : Prop :=\n  observedLanguage = declaredCode.language ∧ observedDependencies = declaredCode.dependencies",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredCode": "C10.value"
+      }
+    },
+    {
+      "id": "R37",
+      "parent": "C10",
+      "group": "コード・依存ライブラリ",
+      "explanation": "宣言した実行コマンド・引数・設定と、観測されたものが一致する。",
+      "definitions": "",
+      "proposition": "abbrev R37 (declaredCode : Code) (observedSetupCommand observedCommand : List String)\n    (observedEnvironmentVariables : List (String × String)) : Prop :=\n  observedSetupCommand = declaredCode.setupCommand ∧ observedCommand = declaredCode.command ∧\n  observedEnvironmentVariables = declaredCode.environmentVariables",
+      "main": false,
+      "kind": "",
+      "verifier": "GitHub",
+      "declared": {
+        "declaredCode": "C10.value"
+      }
+    }
+  ],
+  "variables": {
+    "outputTestMse": {
+      "type": "ℚ",
+      "meaning": "出力された、テストデータに対する MSE",
+      "verifier": "GitHub",
+      "query": "experiment_output",
+      "args": {
+        "key": "testMse"
+      }
+    },
+    "preparedDatasets": {
+      "type": "List Dataset",
+      "meaning": "実験の前に用意したファイルごとの、名前、URL またはパス、チェックサム、件数、列",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "prepared.json"
+      }
+    },
+    "observedLoadCalls": {
+      "type": "List Call",
+      "meaning": "実験のプロセスの中で記録された、読み込みの関数の呼び出しごとの、関数の名前と引数（設定値）",
+      "verifier": "GitHub",
+      "query": "observed_calls",
+      "args": {
+        "function": "numpy.loadtxt"
+      }
+    },
+    "loadedFileChecksums": {
+      "type": "List String",
+      "meaning": "読み込みの関数が呼ばれた時点での、渡されたファイルのチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "numpy.loadtxt",
+        "paths": [
+          [
+            "files",
+            "fname",
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "loadedShapes": {
+      "type": "List (List ℕ)",
+      "meaning": "読み込みの関数が返した表ごとの、件数と列数",
+      "verifier": "GitHub",
+      "query": "observed_call_lists",
+      "args": {
+        "function": "numpy.loadtxt",
+        "paths": [
+          [
+            "returned",
+            0,
+            "shape"
+          ]
+        ]
+      }
+    },
+    "preparedFileColumnChecksums": {
+      "type": "List (List String)",
+      "meaning": "用意したファイルごとの、列ごとの値のチェックサム",
+      "verifier": "GitHub",
+      "query": "prepared_file_column_checksums",
+      "args": {
+        "paths": [
+          "outputs/data/diabetes.tab.txt"
+        ]
+      }
+    },
+    "loadedColumnChecksums": {
+      "type": "List (List String)",
+      "meaning": "読み込みの関数が返した表ごとの、列ごとの値のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_lists",
+      "args": {
+        "function": "numpy.loadtxt",
+        "paths": [
+          [
+            "returned",
+            0,
+            "columnSha256s"
+          ]
+        ]
+      }
+    },
+    "observedFeatureColumns": {
+      "type": "List String",
+      "meaning": "読み込んだ表の列のうち、分割の関数に説明変数として渡された列の名前",
+      "verifier": "GitHub",
+      "query": "observed_column_names",
+      "args": {
+        "loader": "numpy.loadtxt",
+        "consumer": "sklearn.model_selection.train_test_split",
+        "arrays": [
+          "arrays[0]"
+        ]
+      }
+    },
+    "observedTargetColumn": {
+      "type": "String",
+      "meaning": "読み込んだ表の列のうち、分割の関数に目的変数として渡された列の名前",
+      "verifier": "GitHub",
+      "query": "observed_column_names",
+      "args": {
+        "loader": "numpy.loadtxt",
+        "consumer": "sklearn.model_selection.train_test_split",
+        "arrays": [
+          "arrays[1]"
+        ],
+        "single": true
+      }
+    },
+    "observedSplitCalls": {
+      "type": "List Call",
+      "meaning": "実験のプロセスの中で記録された、分割の関数の呼び出しごとの、関数の名前と引数（設定値）",
+      "verifier": "GitHub",
+      "query": "observed_calls",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split"
+      }
+    },
+    "splitInputColumnChecksums": {
+      "type": "List (List String)",
+      "meaning": "分割の関数の呼び出しごとの、渡された説明変数と目的変数の、列ごとの値のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_lists",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "paths": [
+          [
+            "arrays",
+            "arrays[0]",
+            "columnSha256s"
+          ],
+          [
+            "arrays",
+            "arrays[1]",
+            "columnSha256s"
+          ]
+        ]
+      }
+    },
+    "observedTrainIndex": {
+      "type": "List ℕ",
+      "meaning": "分割の関数が返した訓練データの行が、分割に渡された行の何番目か",
+      "verifier": "GitHub",
+      "query": "observed_row_indexes",
+      "args": {
+        "source_function": "sklearn.model_selection.train_test_split",
+        "source_arrays": [
+          "arrays[0]",
+          "arrays[1]"
+        ],
+        "target_function": "sklearn.model_selection.train_test_split",
+        "target_returned": [
+          0,
+          2
+        ]
+      }
+    },
+    "observedTestIndex": {
+      "type": "List ℕ",
+      "meaning": "分割の関数が返したテストデータの行が、分割に渡された行の何番目か",
+      "verifier": "GitHub",
+      "query": "observed_row_indexes",
+      "args": {
+        "source_function": "sklearn.model_selection.train_test_split",
+        "source_arrays": [
+          "arrays[0]",
+          "arrays[1]"
+        ],
+        "target_function": "sklearn.model_selection.train_test_split",
+        "target_returned": [
+          1,
+          3
+        ]
+      }
+    },
+    "splitInputSampleCount": {
+      "type": "ℕ",
+      "meaning": "分割の関数に渡されたデータの件数",
+      "verifier": "GitHub",
+      "query": "observed_only_call_value",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "keys": [
+          "arrays",
+          "arrays[0]",
+          "shape",
+          0
+        ]
+      }
+    },
+    "observedSplitSeeds": {
+      "type": "List String",
+      "meaning": "分割の関数の呼び出しごとの、渡されたシード（random_state）",
+      "verifier": "GitHub",
+      "query": "observed_call_settings",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "setting": "random_state"
+      }
+    },
+    "observedFitCalls": {
+      "type": "List Call",
+      "meaning": "実験のプロセスの中で記録された、学習の関数の呼び出しごとの、関数の名前と引数（設定値）",
+      "verifier": "GitHub",
+      "query": "observed_calls",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.fit",
+        "with_model_parameters": true
+      }
+    },
+    "splitTrainChecksums": {
+      "type": "List String",
+      "meaning": "分割の関数が返した訓練データの、説明変数と目的変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "paths": [
+          [
+            "returned",
+            0,
+            "sha256"
+          ],
+          [
+            "returned",
+            2,
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "fitInputChecksums": {
+      "type": "List String",
+      "meaning": "学習の関数に渡された、説明変数と目的変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.fit",
+        "paths": [
+          [
+            "arrays",
+            "X",
+            "sha256"
+          ],
+          [
+            "arrays",
+            "y",
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "fitInputIndex": {
+      "type": "List ℕ",
+      "meaning": "学習の関数に渡された行が、分割に渡された行の何番目か",
+      "verifier": "GitHub",
+      "query": "observed_row_indexes",
+      "args": {
+        "source_function": "sklearn.model_selection.train_test_split",
+        "source_arrays": [
+          "arrays[0]",
+          "arrays[1]"
+        ],
+        "target_function": "sklearn.linear_model.LinearRegression.fit",
+        "target_arrays": [
+          "X",
+          "y"
+        ]
+      }
+    },
+    "observedPredictCalls": {
+      "type": "List Call",
+      "meaning": "実験のプロセスの中で記録された、推論の関数の呼び出しごとの、関数の名前と引数（設定値）",
+      "verifier": "GitHub",
+      "query": "observed_calls",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.predict"
+      }
+    },
+    "fittedModelChecksums": {
+      "type": "List String",
+      "meaning": "学習の関数が終わった時点での、モデルの属性のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.fit",
+        "paths": [
+          [
+            "modelStateAfter"
+          ]
+        ]
+      }
+    },
+    "predictModelChecksums": {
+      "type": "List String",
+      "meaning": "推論の関数が呼ばれた時点での、モデルの属性のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.predict",
+        "paths": [
+          [
+            "modelStateBefore"
+          ]
+        ]
+      }
+    },
+    "splitTestFeatureChecksums": {
+      "type": "List String",
+      "meaning": "分割の関数が返したテストデータの、説明変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "paths": [
+          [
+            "returned",
+            1,
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "predictInputChecksums": {
+      "type": "List String",
+      "meaning": "推論の関数に渡された、説明変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.predict",
+        "paths": [
+          [
+            "arrays",
+            "X",
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "splitTestTargetChecksums": {
+      "type": "List String",
+      "meaning": "分割の関数が返したテストデータの、目的変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.model_selection.train_test_split",
+        "paths": [
+          [
+            "returned",
+            3,
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "predictInputColumnChecksums": {
+      "type": "List (List String)",
+      "meaning": "推論の関数の呼び出しごとの、渡された説明変数の、列ごとの値のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_lists",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.predict",
+        "paths": [
+          [
+            "arrays",
+            "X",
+            "columnSha256s"
+          ]
+        ]
+      }
+    },
+    "observedMetricCalls": {
+      "type": "List Call",
+      "meaning": "実験のプロセスの中で記録された、評価指標の関数の呼び出しごとの、関数の名前と引数（設定値）",
+      "verifier": "GitHub",
+      "query": "observed_calls",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error"
+      }
+    },
+    "predictOutputChecksums": {
+      "type": "List String",
+      "meaning": "推論の関数が返した予測値のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.linear_model.LinearRegression.predict",
+        "paths": [
+          [
+            "returned",
+            0,
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "metricPredictionChecksums": {
+      "type": "List String",
+      "meaning": "評価指標の関数に渡された、予測値のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error",
+        "paths": [
+          [
+            "arrays",
+            "y_pred",
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "metricTargetChecksums": {
+      "type": "List String",
+      "meaning": "評価指標の関数に渡された、目的変数のチェックサム",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error",
+        "paths": [
+          [
+            "arrays",
+            "y_true",
+            "sha256"
+          ]
+        ]
+      }
+    },
+    "metricTargetSampleCounts": {
+      "type": "List ℕ",
+      "meaning": "評価指標の関数に渡された、目的変数の件数",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error",
+        "paths": [
+          [
+            "arrays",
+            "y_true",
+            "shape",
+            0
+          ]
+        ]
+      }
+    },
+    "metricPredictionSampleCounts": {
+      "type": "List ℕ",
+      "meaning": "評価指標の関数に渡された、予測値の件数",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error",
+        "paths": [
+          [
+            "arrays",
+            "y_pred",
+            "shape",
+            0
+          ]
+        ]
+      }
+    },
+    "metricReturnedValues": {
+      "type": "List ℚ",
+      "meaning": "評価指標の関数が返した値",
+      "verifier": "GitHub",
+      "query": "observed_call_values",
+      "args": {
+        "function": "sklearn.metrics.mean_squared_error",
+        "paths": [
+          [
+            "returned",
+            "value"
+          ]
+        ]
+      }
+    },
+    "observedEnvironment": {
+      "type": "Environment",
+      "meaning": "実験を実行した計算機の OS、CPU、メモリ、GPU、台数（実験コードの外で測ったもの）",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "environment.json"
+      }
+    },
+    "configuredParallelism": {
+      "type": "Parallelism",
+      "meaning": "実験のプロセスに渡した並列数",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "usage.json",
+        "keys": [
+          "configured"
+        ]
+      }
+    },
+    "finalMaxMemoryMebibytes": {
+      "type": "ℕ",
+      "meaning": "実験のプロセスの終了時に OS が報告した、最大のメモリ使用量（MiB、切り上げ）",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "usage.json",
+        "keys": [
+          "final",
+          "maxMemoryMebibytes"
+        ]
+      }
+    },
+    "sampledUsage": {
+      "type": "SampledUsage",
+      "meaning": "実験のプロセスの実行中に測った、メモリ使用量、スレッド数、プロセス数、GPU を使うプロセスの数の最大",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "usage.json",
+        "keys": [
+          "sampled"
+        ]
+      }
+    },
+    "observedCommit": {
+      "type": "String",
+      "meaning": "実行が取り出したリポジトリの commit",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "repository_commit.json",
+        "keys": [
+          "commit"
+        ]
+      }
+    },
+    "observedLanguage": {
+      "type": "String",
+      "meaning": "実験を実行した言語の処理系と版",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "code.json",
+        "keys": [
+          "language"
+        ]
+      }
+    },
+    "observedDependencies": {
+      "type": "List (String × String)",
+      "meaning": "実験を実行した環境に入っていたライブラリの名前と版",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "code.json",
+        "keys": [
+          "dependencies"
+        ]
+      }
+    },
+    "observedSetupCommand": {
+      "type": "List String",
+      "meaning": "実験の前に実行した、環境を作るコマンド",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "code.json",
+        "keys": [
+          "setupCommand"
+        ]
+      }
+    },
+    "observedCommand": {
+      "type": "List String",
+      "meaning": "実行した実験のコマンド",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "code.json",
+        "keys": [
+          "command"
+        ]
+      }
+    },
+    "observedEnvironmentVariables": {
+      "type": "List (String × String)",
+      "meaning": "実験のプロセスに渡した環境変数",
+      "verifier": "GitHub",
+      "query": "artifact_json",
+      "args": {
+        "path": "code.json",
+        "keys": [
+          "environmentVariables"
+        ]
+      }
+    }
+  },
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ]
+}
