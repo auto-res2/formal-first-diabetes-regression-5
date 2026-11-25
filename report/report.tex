@@ -1,0 +1,127 @@
+\documentclass[9pt,a4paper,twocolumn]{ltjsarticle}
+\usepackage[top=20mm,bottom=22mm,left=17mm,right=17mm,columnsep=8mm]{geometry}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\input{values.tex}
+% 各文の元になった claims の ID。スキーマ（claims.json、検証の結果を含む commit）の、その claim の行へリンクする
+\newcommand{\repositoryurl}{https://github.com/auto-res2/formal-first-diabetes-regression-5}
+\newcommand{\schemaurl}{\repositoryurl/blob/\SchemaCommit/formal/claims.json}
+\newcommand{\cid}[1]{\textsuperscript{\textsf{\scriptsize[\href{\schemaurl\#L\csname line#1\endcsname}{#1}]}}}
+% 検証された値。スキーマの、その値の行へリンクする
+\newcommand{\val}[1]{\textsuperscript{\textsf{\scriptsize[\href{\schemaurl\#L\csname line#1\endcsname}{値}]}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\begin{document}
+
+\twocolumn[{
+\begin{center}
+{\Large\bfseries 糖尿病データセットに対する線形回帰のテスト MSE と\\しきい値 3400 の比較：手順の宣言と，宣言ごとの信頼性条件}\\[2mm]
+{\normalsize auto-res2}
+\end{center}
+\vspace{3mm}
+}]
+
+\section{主張}
+
+実験の前に，次の 2 つを宣言した．
+\cid{C01}メインの主張：Efron らの糖尿病データセットに線形回帰モデルを当てはめる実験が出力する，テストデータに対する MSE は，3400 を下回る．
+\cid{Reliable.C01}信頼性の主張：メインの主張は，信頼性条件を満たす．すなわち，MSE を導く手順の宣言それぞれについて，その宣言に当てた信頼性条件がすべて成り立つ．
+検証の結果，2 つとも偽であった．出力された MSE は 3400 を下回らず（\ref{sec:result} 節），計算環境が宣言と一致しなかった（\ref{sec:reliability} 節）．
+
+\section{手順の宣言}
+
+\cid{C02}MSE は，次の 8 つの宣言の手順で，1 つの値に定まる．宣言はリポジトリ\footnote{\href{\repositoryurl}{\nolinkurl{github.com/auto-res2/formal-first-diabetes-regression-5}}}に置き，本番の実験は，宣言を置いた commit から起動した．
+
+\paragraph{データセット}
+\cid{C03}Efron ら~\cite{efron} の糖尿病データセットを，配布元の URL\footnote{\url{https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt}}からダウンロードして使用する．ファイルのチェックサム（SHA-256），件数（\NSamples{} 件），列（説明変数 \NFeatures{} 個と目的変数 Y）を固定した．
+\cid{C04}ファイルは \code{numpy.loadtxt} で読み込み（1 行目の列名は読み飛ばす），1〜10 列目を説明変数，11 列目を目的変数とする．
+\cid{C05}\code{sklearn.model\_selection.train\_test\_split} を，乱数のシード 0，テストデータの割合 20\% で使用し，テストデータ以外の行を訓練データとする．
+
+\paragraph{学習，推論，評価}
+\cid{C06}訓練データの説明変数と目的変数に，\code{LinearRegression.fit} を既定のパラメータで適用する．
+\cid{C07}学習したモデルとテストデータの説明変数に，\code{LinearRegression.predict} を適用して，予測値を求める．
+\cid{C08}テストデータの目的変数と予測値に \code{sklearn.metrics.mean\_squared\_error} を適用した値を，MSE とする．
+
+\paragraph{計算環境とコード}
+\cid{C09}Ubuntu 24.04（カーネル \DeclaredKernelRelease），CPU は \DeclaredCpuModel（x86\_64，\LogicalCpuCount{} コア），メモリ \MemoryGib{} GiB の計算機を 1 台使用し，GPU は使わない．並列数はスレッド 1，プロセス 1 で，メモリ使用量の上限は \MemoryUsageLimit{} MiB とする．カーネルの版と CPU の値は，実験の前の試運転で，GitHub Actions の runner から読んだものである．
+\cid{C10}実験は，リポジトリの commit \code{\RepositoryCommit} を取り出して実行する．言語は CPython 3.13.3 で，依存ライブラリの版，実行コマンド，環境変数を固定した．実験コード，実行の設定，観測の処理は，すべてこの commit にある．
+
+\section{結果}
+\label{sec:result}
+
+出力された MSE は \TestMse\val{outputTestMse} であった．
+\cid{C01}この値は 3400 を下回らないので，メインの主張は偽である．この判定は値の比較だけで決まり，信頼性条件にも公理にも依存しない．
+\cid{Reliable.C01}信頼性の主張も偽である．
+\cid{Reliable.C02}8 つの宣言のうち，計算環境の宣言（C09）が信頼性条件を満たさなかったためである．ほかの 7 つの宣言は，信頼性条件を満たした．
+
+\section{信頼性条件}
+\label{sec:reliability}
+
+宣言ごとに，当てた信頼性条件と判定を示す．観測は，実験コードの外で行った（実験のプロセスに差し込む記録の処理と，実行の入口）．「関数は，信頼できる」などの，検証器が無い条件は，公理として置いた．公理に依存する判定には，そのことを記す．
+
+\paragraph{データセットのダウンロード}
+\cid{Reliable.C03}3 つの条件は，すべて成り立った．
+\cid{R01}宣言した URL は，用意したファイルの URL と一致した．
+\cid{R02}宣言したチェックサムは，用意したファイルのチェックサムと一致した．
+\cid{R03}宣言した件数と列は，用意したファイルの件数と列と一致した．
+
+\paragraph{データセットの読み込み}
+\cid{Reliable.C04}条件は，すべて成り立った．この判定は，公理 R04 に依存する．
+\cid{R04}公理：宣言した読み込みの関数は，信頼できる．
+\cid{R05}読み込みの関数と引数は，宣言と一致した．
+\cid{R06}用意したファイルのチェックサムは，読み込みの関数が呼ばれた時点で測ったファイルのチェックサムと一致した．
+\cid{R07}用意したファイルの件数と列数は，読み込んだデータの件数と列数と一致した．
+\cid{R08}読み込んだデータの値は，用意したファイルの値と一致した．
+\cid{R09}説明変数と目的変数として使われた列は，宣言と一致した．
+
+\paragraph{データセットの分割}
+\cid{Reliable.C05}条件は，すべて成り立った．この判定は，公理 R10，R15，R17 に依存する．
+\cid{R10}公理：宣言した分割の関数は，信頼できる．
+\cid{R11}分割の関数と引数は，宣言と一致した．
+\cid{R12}読み込んだデータは，すべて，そのまま分割に渡された．
+\cid{R13}訓練データ \NTrain{} 件\val{observedTrainIndex}とテストデータ \NTest{} 件\val{observedTestIndex}の行は，重ならない．
+\cid{R14}合わせると，分割に渡した全 \NSamples{} 件になる．
+\cid{R15}公理：agent は，テストデータの中身を閲覧していない．
+\cid{R16}分割に使われたシードは，宣言と一致した．
+\cid{R17}公理：乱数生成器は，指定したアルゴリズムで乱数を生成する．
+
+\paragraph{学習・フィッティング}
+\cid{Reliable.C06}条件は，すべて成り立った．この判定は，公理 R18 に依存する．
+\cid{R18}公理：宣言した学習の関数は，信頼できる．
+\cid{R19}学習の関数と引数（設定値）は，宣言と一致した．
+\cid{R20}分割で得た訓練データは，すべて，そのまま学習に渡された．
+\cid{R21}学習に渡されたデータに，テストデータの行は含まれていない．
+
+\paragraph{推論・予測}
+\cid{Reliable.C07}条件は，すべて成り立った．この判定は，公理 R22 に依存する．
+\cid{R22}公理：宣言した推論の関数は，信頼できる．
+\cid{R23}推論の関数と引数は，宣言と一致した．
+\cid{R24}学習したモデルは，そのまま推論に渡された．
+\cid{R25}分割で得たテストデータの説明変数は，すべて，そのまま推論に渡された．
+\cid{R26}推論に渡されたデータに，テストデータの目的変数は含まれていない．
+
+\paragraph{評価指標の計算}
+\cid{Reliable.C08}条件は，すべて成り立った．この判定は，公理 R27 に依存する．
+\cid{R27}公理：宣言した評価指標の関数は，信頼できる．
+\cid{R28}評価指標の関数と引数は，宣言と一致した．
+\cid{R29}推論が返した予測値は，すべて，そのまま評価指標の計算に渡された．
+\cid{R30}分割で得たテストデータの目的変数は，すべて，そのまま評価指標の計算に渡された．
+\cid{R31}渡された予測値と目的変数の件数は，同じである．
+\cid{R32}評価指標の関数が返した値は，そのまま出力された．
+
+\paragraph{ハードウェア・OS}
+\cid{Reliable.C09}この宣言は，信頼性条件を満たさなかった．
+\cid{R33}出力された計算環境\val{observedEnvironment}は，宣言と一致しなかった．宣言した CPU は \DeclaredCpuModel，カーネルは \DeclaredKernelRelease{} で，本番の実行で観測されたのは \ObservedCpuModel{} と \ObservedKernelRelease{} である．OS の名前と版，アーキテクチャ，コア数，メモリの容量，並列数は宣言と一致し，最大のメモリ使用量 \MaxMemoryUsage{} MiB\val{finalMaxMemoryMebibytes}は上限以下であった．
+\cid{R34}実行中に測ったスレッド数，プロセス数，GPU を使うプロセスの数，メモリ使用量は，渡した並列数と，終了時の最大のメモリ使用量を超えなかった．
+
+\paragraph{コード・依存ライブラリ}
+\cid{Reliable.C10}3 つの条件は，すべて成り立った．
+\cid{R35}実行が取り出した commit は，宣言と一致した．
+\cid{R36}言語と依存ライブラリの版は，宣言と一致した．
+\cid{R37}実行コマンド，引数，環境変数は，宣言と一致した．
+
+\begin{thebibliography}{9}
+\small
+\bibitem{efron} B. Efron, T. Hastie, I. Johnstone, R. Tibshirani: Least angle regression, Annals of Statistics, 32(2), 407--499, 2004.
+\end{thebibliography}
+
+\end{document}
