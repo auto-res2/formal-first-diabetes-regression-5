@@ -24,6 +24,19 @@ C01（メインの claim）: 出力された MSE < 3400
 - 最後に言うことは 2 つ。`main_claim`（C01。メインの claim の成立）と、`main_reliability`（`Reliable.C01`。メインの claim に対する信頼性条件の成立）
 - 「関数は、信頼できる」などの、検証器が無い R は、公理として置く（検証不能）
 
+## 結果
+
+本番は 1 回実行した（[実験の run](https://github.com/auto-res2/formal-first-diabetes-regression-5/actions/runs/45671266200)、[検証の run](https://github.com/auto-res2/formal-first-diabetes-regression-5/actions/runs/45671354628)）。
+
+- `main_claim`: C01（出力された MSE < 3400）は偽。テストデータに対する MSE は 3424.26
+- `main_reliability`: `Reliable.C01` は偽。計算環境の宣言（C09）が、信頼性条件を満たさなかった
+  - R33 が偽。宣言した CPU とカーネルの版（Intel Xeon 6975P-C、7.0.0-1014-aws。試運転で読んだ値）に対して、本番の runner は AMD EPYC 9V74、7.0.0-1017-azure だった
+  - これを受けて `Reliable.C09`、`Reliable.C02`、`Reliable.C01` が偽
+- ほかの宣言（C03〜C08、C10）は、信頼性条件を満たした。`Reliable.C04`〜`Reliable.C08` は、検証器の無い条件（公理に置いた R04、R10、R15、R17、R18、R22、R27）に依存する
+- 57 claims: 真 45、偽 5、検証不能 7
+- 検証された値は [`formal/lean/Values.lean`](formal/lean/Values.lean)、各 claim の判定の定理は [`formal/lean/Theorems.lean`](formal/lean/Theorems.lean)。どちらも検証の run が生成したもの
+- 論文: [`report/report.pdf`](report/report.pdf)（各文に、元になった claims の ID を付けた）
+
 ## 置いてあるもの
 
 - スキーマ: [`formal/claims.json`](formal/claims.json)（claims の形式化、値の取り方。検証の結果もここに書く）
